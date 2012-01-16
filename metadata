@@ -1,0 +1,15 @@
+[general]
+id=jid0-XWJxt5VvCXkKzQK99PhZqAn7Xbg@jetpack
+basename=searchlinkfix
+branchname=GOOGLE_SEARCH_LINK_FIX
+version=1.3a
+author=Wladimir Palant
+restartless=true
+nojar=true
+
+[homepage]
+default=https://addons.mozilla.org/addon/google-search-link-fix/
+
+[compat]
+firefox=8.0/12.0a1
+seamonkey=2.5/2.9a1
