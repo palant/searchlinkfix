@@ -6,7 +6,7 @@
 
 let {WindowObserver} = require("windowObserver");
 
-let AppIntegration = exports.AppIntegration =
+let Main = exports.Main =
 {
   initialized: false,
 
