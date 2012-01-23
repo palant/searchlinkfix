@@ -5,29 +5,7 @@
  */
 
 let {WindowObserver} = require("windowObserver");
-
-let Main = exports.Main =
-{
-  initialized: false,
-
-  init: function()
-  {
-    if (this.initialized)
-      return;
-    this.initialized = true;
-
-    WindowObserver.init(this);
-  },
-
-  shutdown: function()
-  {
-    if (!this.initialized)
-      return;
-    this.initialized = false;
-
-    WindowObserver.shutdown(this);
-  },
-
+new WindowObserver({
   applyToWindow: function(window)
   {
     if (!("gBrowser" in window))
@@ -45,7 +23,7 @@ let Main = exports.Main =
     window.gBrowser.removeEventListener("mousedown", saveLinkTarget, true);
     window.gBrowser.removeEventListener("mousedown", restoreLinkTarget, false);
   }
-};
+});
 
 let include = /^https?:\/\/(www\.|encrypted\.)?google((\.com?)?\.\w{2}|\.com)\/.*/;
 let currentLink = null;
