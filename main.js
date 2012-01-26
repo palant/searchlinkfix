@@ -25,13 +25,26 @@ new WindowObserver({
   }
 });
 
-let include = /^https?:\/\/(www\.|encrypted\.)?google((\.com?)?\.\w{2}|\.com)\/.*/;
 let currentLink = null;
 let currentLinkHref = null;
 
+function isSearchPage(window)
+{
+  let sandbox = new Cu.Sandbox(window);
+  sandbox.window = XPCNativeWrapper.unwrap(window);
+  try
+  {
+    return Cu.evalInSandbox("window.google && window.google.sbox ? true : false", sandbox);
+  }
+  catch (e)
+  {
+    return false;
+  }
+}
+
 function saveLinkTarget(event)
 {
-  if (!include.test(event.target.ownerDocument.defaultView.location.href))
+  if (!isSearchPage(event.target.ownerDocument.defaultView))
     return;
 
   for (currentLink = event.target; currentLink; currentLink = currentLink.parentNode)
