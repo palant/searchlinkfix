@@ -2,7 +2,7 @@
 id=jid0-XWJxt5VvCXkKzQK99PhZqAn7Xbg@jetpack
 basename=searchlinkfix
 branchname=GOOGLE_SEARCH_LINK_FIX
-version=1.3.2
+version=1.3.3a
 author=Wladimir Palant
 restartless=true
 nojar=true
