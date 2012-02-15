@@ -30,6 +30,13 @@ let currentLinkHref = null;
 
 function isSearchPage(window)
 {
+  try
+  {
+    if (window.location.host == "yandex.ru")
+      return true;
+  }
+  catch (e) {}
+
   let sandbox = new Cu.Sandbox(window);
   sandbox.window = XPCNativeWrapper.unwrap(window);
   try
