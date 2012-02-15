@@ -34,7 +34,7 @@ function isSearchPage(window)
   sandbox.window = XPCNativeWrapper.unwrap(window);
   try
   {
-    return Cu.evalInSandbox("window.google && window.google.sbox ? true : false", sandbox);
+    return Cu.evalInSandbox("window.google && (window.google.sn || window.google.search) ? true : false", sandbox);
   }
   catch (e)
   {
