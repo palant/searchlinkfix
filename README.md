@@ -1,7 +1,7 @@
-Google/Yandex search link fix
+Google search link fix
 =============================
 
-Google/Yandex search link fix is a Firefox extension that prevents Google and Yandex search pages from modifying search result links when you click them. This is useful when copying links but it also helps privacy by preventing the search engines from recording your clicks. [Detailed description](https://palant.de/2011/11/28/google-yandex-search-link-fix)
+Google search link fix is a Firefox extension that prevents Google, Yahoo and Yandex search pages from modifying search result links when you click them. This is useful when copying links but it also helps privacy by preventing the search engines from recording your clicks. [Detailed description](https://palant.de/2011/11/28/google-yandex-search-link-fix)
 
 Prerequisites
 -------------
@@ -27,4 +27,4 @@ Testing your changes is easiest if you install the [Extension Auto-Installer ext
 
     python build.py autoinstall 8888
 
-Google/Yandex search link fix will be updated automatically, without any prompts or browser restarts.
+Google search link fix will be updated automatically, without any prompts or browser restarts.
