@@ -45,6 +45,8 @@ This will instrument Firefox to test Google search link fix on various websites,
 * `get_urls()` will return the list of URLs the browser navigated to (including redirects) since the previous call.
 * `middle_click(element)` sends the necessary mouse events to an element to simulate a middle-click.
 * `close_background_tabs()` closes all but the currently selected tab in the current browser window.
+* `Keys` variable was imported from the [selenium.webdriver.common.keys](http://selenium.googlecode.com/svn/trunk/docs/api/py/webdriver/selenium.webdriver.common.keys.html) module.
+* `re` points to Python's `re` module.
 * `print()` is the standard Python [`print()` function](https://docs.python.org/2/library/functions.html#print) and can be used for debugging.
 
 Note that Selenium WebDriver lacks some functionality which is why the testhelper extension is added to the Firefox profile in addition to Google search link fix. This extension is required for `get_urls()`, `middle_click()` and `close_background_tabs()` functions to work.

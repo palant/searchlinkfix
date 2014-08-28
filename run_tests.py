@@ -6,6 +6,7 @@ from __future__ import print_function
 import os
 import shutil
 import tempfile
+import re
 from buildtools.packagerGecko import createBuild
 from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
@@ -79,6 +80,7 @@ def run_tests():
       "close_background_tabs": close_background_tabs,
       "print": print,
       "Keys": Keys,
+      "re": re,
       "True": True,
       "False": False,
       "Exception": Exception,
