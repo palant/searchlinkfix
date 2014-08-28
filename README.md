@@ -42,7 +42,9 @@ This will instrument Firefox to test Google search link fix on various websites,
 * `wait_until(method)` will wait until the method returns `True` or time out after 10 seconds.
 * `accept_alert()` accepts an alert box displayed by the webpage.
 * `chain(method, ...)` will call all methods passed in with an [`ActionChains` instance](http://selenium.googlecode.com/svn/trunk/docs/api/py/webdriver/selenium.webdriver.common.action_chains.html) as parameter.
-* `get_urls()` will return the list of URLs the browser navigated to (including redirects) since the previous call. Selenium WebDriver lacks the necessary functionality which is why this function relies on the testhelper extension (added to the Firefox profile in addition to Google search link fix).
+* `get_urls()` will return the list of URLs the browser navigated to (including redirects) since the previous call.
+* `middle_click(element)` sends the necessary mouse events to an element to simulate a middle-click.
+* `close_background_tabs()` closes all but the currently selected tab in the current browser window.
 * `print()` is the standard Python [`print()` function](https://docs.python.org/2/library/functions.html#print) and can be used for debugging.
 
-TODO: Find a way to simulate middle-clicks since Selenium lacks this functionality.
+Note that Selenium WebDriver lacks some functionality which is why the testhelper extension is added to the Firefox profile in addition to Google search link fix. This extension is required for `get_urls()`, `middle_click()` and `close_background_tabs()` functions to work.

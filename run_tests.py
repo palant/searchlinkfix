@@ -42,7 +42,7 @@ def run_tests():
     max_timestamp = {"value": 0}
     def get_urls():
       result = []
-      prefix = "Loading: "
+      prefix = "[testhelper] Loading: "
       new_timestamp = max_timestamp["value"]
       for item in driver.get_log("browser"):
         timestamp = item["timestamp"]
@@ -54,6 +54,20 @@ def run_tests():
       max_timestamp["value"] = new_timestamp
       return result
 
+    def middle_click(element):
+      driver.execute_script('''
+        var event = document.createEvent("Events");
+        event.initEvent("testhelper_middleclick", true, false);
+        arguments[0].dispatchEvent(event);
+      ''', element)
+
+    def close_background_tabs():
+      driver.execute_script('''
+        var event = document.createEvent("Events");
+        event.initEvent("testhelper_closeBackgroundTabs", true, false);
+        document.dispatchEvent(event);
+      ''')
+
     environment = {
       "__builtins__": {},
       "driver": driver,
@@ -61,6 +75,8 @@ def run_tests():
       "accept_alert": Alert(driver).accept,
       "chain": chain,
       "get_urls": get_urls,
+      "middle_click": middle_click,
+      "close_background_tabs": close_background_tabs,
       "print": print,
       "Keys": Keys,
       "True": True,

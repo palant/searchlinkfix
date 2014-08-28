@@ -12,7 +12,9 @@
     if (!("gBrowser" in window))
       return;
 
-    window.gBrowser.addProgressListener(progressListener);
+    window.gBrowser.addTabsProgressListener(progressListener);
+    window.gBrowser.addEventListener("testhelper_middleclick", fakeMiddleClick, false, true);
+    window.gBrowser.addEventListener("testhelper_closeBackgroundTabs", closeBackgroundTabs, false, true);
   },
 
   removeFromWindow: function(window)
@@ -20,23 +22,39 @@
     if (!("gBrowser" in window))
       return;
 
-    window.gBrowser.removeProgressListener(progressListener);
+    window.gBrowser.removeTabsProgressListener(progressListener);
+    window.gBrowser.removeEventListener("testhelper_middleclick", fakeMiddleClick, false, true);
+    window.gBrowser.removeEventListener("testhelper_closeBackgroundTabs", closeBackgroundTabs, false, true);
   }
 });
 
 let progressListener =
 {
-  onLocationChange: function(webProgress, request, location, flags) {},
-  onProgressChange: function() {},
-  onSecurityChange: function() {},
-  onStateChange: function(webProgress, request, flags, status)
+  onStateChange: function(browser, webProgress, request, flags, status)
   {
     if (!(flags & Ci.nsIWebProgressListener.STATE_IS_WINDOW))
       return;
     if (!(flags & Ci.nsIWebProgressListener.STATE_START) && !(flags & Ci.nsIWebProgressListener.STATE_REDIRECTING))
       return;
     if (request instanceof Ci.nsIChannel)
-      Cu.reportError("Loading: " + request.URI.spec);
-  },
-  onStatusChange: function() {}
+      Cu.reportError("[testhelper] Loading: " + request.URI.spec);
+  }
 };
+
+function fakeMiddleClick(event)
+{
+  let utils = event.target.ownerDocument.defaultView
+                   .QueryInterface(Ci.nsIInterfaceRequestor)
+                   .getInterface(Ci.nsIDOMWindowUtils);
+  let rect = event.target.getBoundingClientRect();
+  utils.sendMouseEvent("mousedown", rect.left + 1, rect.top + 1, 1, 1, 0);
+  utils.sendMouseEvent("mouseup", rect.left + 1, rect.top + 1, 1, 1, 0);
+}
+
+function closeBackgroundTabs(event)
+{
+  let browser = event.currentTarget;
+  for (let i = browser.tabs.length - 1; i >= 0; i--)
+    if (browser.tabs[i] != browser.selectedTab)
+      browser.removeTab(browser.tabs[i]);
+}

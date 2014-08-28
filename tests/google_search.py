@@ -64,6 +64,11 @@ wait_until(lambda d: d.find_element_by_id("ires"))
 init_results()
 assert_link_unchanged()
 
+# Middle-click search result
+assert_no_intermediate_urls(lambda: middle_click(result), href)
+close_background_tabs()
+assert_link_unchanged()
+
 # Click Apps button to bring up dropdown
 driver.find_element_by_css_selector("a[title='Apps']").click()
 wait_until(lambda d: d.find_element_by_css_selector("div[aria-label='Apps']"))
