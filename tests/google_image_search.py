@@ -1,4 +1,5 @@
 def strip_anchor(url):
+  import re
   return re.sub(r"#.*", "", url)
 
 # Type in a search query

@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from __future__ import print_function
-
 import os
 import shutil
 import tempfile
@@ -79,14 +77,8 @@ def run_tests():
     WebElement.middle_click = middle_click
 
     environment = {
-      "__builtins__": {},
+      "__builtins__": __builtins__,
       "driver": driver,
-      "print": print,
-      "re": re,
-      "True": True,
-      "False": False,
-      "Exception": Exception,
-      "AssertionError": AssertionError,
     }
 
     testdir = os.path.join(basedir, "tests")
