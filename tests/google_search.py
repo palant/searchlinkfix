@@ -49,7 +49,7 @@ init_results()
 assert_link_unchanged()
 
 # Keyboard navigation
-driver.execute_script("document.getElementsByName('q')[0].focus()")
+driver.find_element_by_name("q").click()
 driver.chain(
   lambda c: c.send_keys(driver.keys.TAB, driver.keys.TAB, driver.keys.DOWN),
 )
