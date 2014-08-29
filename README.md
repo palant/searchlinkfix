@@ -38,15 +38,15 @@ Running the integration tests requires [Selenium Python bindings](http://seleniu
 
 This will instrument Firefox to test Google search link fix on various websites, all Python files from the `tests` directory will be executed. These files run in a minimal environment, the following functionality is available:
 
-* `driver` variable is a [`WebDriver` instance](http://selenium.googlecode.com/svn/trunk/docs/api/py/webdriver_remote/selenium.webdriver.remote.webdriver.html).
-* `wait_until(method)` will wait until the method returns `True` or time out after 10 seconds.
-* `accept_alert()` accepts an alert box displayed by the webpage.
-* `chain(method, ...)` will call all methods passed in with an [`ActionChains` instance](http://selenium.googlecode.com/svn/trunk/docs/api/py/webdriver/selenium.webdriver.common.action_chains.html) as parameter.
-* `get_urls()` will return the list of URLs the browser navigated to (including redirects) since the previous call.
-* `middle_click(element)` sends the necessary mouse events to an element to simulate a middle-click.
-* `close_background_tabs()` closes all but the currently selected tab in the current browser window.
-* `Keys` variable was imported from the [selenium.webdriver.common.keys](http://selenium.googlecode.com/svn/trunk/docs/api/py/webdriver/selenium.webdriver.common.keys.html) module.
+* `driver` variable is a [`WebDriver` instance](http://selenium.googlecode.com/svn/trunk/docs/api/py/webdriver_remote/selenium.webdriver.remote.webdriver.html). In addition to the official API, the following methods and properties are available:
+ * `driver.wait_until(method)` will wait until the method returns `True` or time out after 10 seconds.
+ * `driver.accept_alert()` accepts an alert box displayed by the webpage.
+ * `driver.chain(method, ...)` will call all methods passed in with an [`ActionChains` instance](http://selenium.googlecode.com/svn/trunk/docs/api/py/webdriver/selenium.webdriver.common.action_chains.html) as parameter.
+ * `driver.get_urls()` will return the list of URLs the browser navigated to (including redirects) since the previous call.
+ * `driver.close_background_tabs()` closes all but the currently selected tab in the current browser window.
+ * `driver.keys` contains the key constants from [selenium.webdriver.common.keys](http://selenium.googlecode.com/svn/trunk/docs/api/py/webdriver/selenium.webdriver.common.keys.html) module.
+ * `WebElement.middle_click()` sends the necessary mouse events to an element to simulate a middle-click.
 * `re` points to Python's `re` module.
 * `print()` is the standard Python [`print()` function](https://docs.python.org/2/library/functions.html#print) and can be used for debugging.
 
-Note that Selenium WebDriver lacks some functionality which is why the testhelper extension is added to the Firefox profile in addition to Google search link fix. This extension is required for `get_urls()`, `middle_click()` and `close_background_tabs()` functions to work.
+Note that Selenium WebDriver lacks some functionality which is why the testhelper extension is added to the Firefox profile in addition to Google search link fix. This extension is required for `driver.get_urls()`, `driver.close_background_tabs()` and `element.middle_click()` functions to work.

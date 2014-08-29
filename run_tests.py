@@ -10,6 +10,7 @@ import re
 from buildtools.packagerGecko import createBuild
 from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
@@ -32,13 +33,18 @@ def run_tests():
     finally:
       os.unlink(build1.name)
       os.unlink(build2.name)
+
     driver = WebDriver(profile)
+    driver.wait_until = lambda method: WebDriverWait(driver, default_timeout).until(lambda d: method())
+    driver.accept_alert = Alert(driver).accept
+    driver.keys = Keys
 
     def chain(*actions):
       for action in actions:
         c = ActionChains(driver)
         action(c)
         c.perform()
+    driver.chain = chain
 
     max_timestamp = {"value": 0}
     def get_urls():
@@ -54,13 +60,7 @@ def run_tests():
         result.append(item["message"][len(prefix):])
       max_timestamp["value"] = new_timestamp
       return result
-
-    def middle_click(element):
-      driver.execute_script('''
-        var event = document.createEvent("Events");
-        event.initEvent("testhelper_middleclick", true, false);
-        arguments[0].dispatchEvent(event);
-      ''', element)
+    driver.get_urls = get_urls
 
     def close_background_tabs():
       driver.execute_script('''
@@ -68,18 +68,20 @@ def run_tests():
         event.initEvent("testhelper_closeBackgroundTabs", true, false);
         document.dispatchEvent(event);
       ''')
+    driver.close_background_tabs = close_background_tabs
+
+    def middle_click(self):
+      driver.execute_script('''
+        var event = document.createEvent("Events");
+        event.initEvent("testhelper_middleclick", true, false);
+        arguments[0].dispatchEvent(event);
+      ''', self)
+    WebElement.middle_click = middle_click
 
     environment = {
       "__builtins__": {},
       "driver": driver,
-      "wait_until": lambda method: WebDriverWait(driver, default_timeout).until(lambda d: method()),
-      "accept_alert": Alert(driver).accept,
-      "chain": chain,
-      "get_urls": get_urls,
-      "middle_click": middle_click,
-      "close_background_tabs": close_background_tabs,
       "print": print,
-      "Keys": Keys,
       "re": re,
       "True": True,
       "False": False,
