@@ -72,7 +72,7 @@ def run_tests():
     environment = {
       "__builtins__": {},
       "driver": driver,
-      "wait_until": WebDriverWait(driver, default_timeout).until,
+      "wait_until": lambda method: WebDriverWait(driver, default_timeout).until(lambda d: method()),
       "accept_alert": Alert(driver).accept,
       "chain": chain,
       "get_urls": get_urls,

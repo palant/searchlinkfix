@@ -14,7 +14,7 @@ def assert_no_intermediate_urls(method, target):
   get_urls()
   method()
   urls = []
-  def check_urls(d):
+  def check_urls():
     urls.extend(get_urls())
     return urls
   wait_until(check_urls)
@@ -23,12 +23,12 @@ def assert_no_intermediate_urls(method, target):
 # Make sure to use google.com
 driver.get("https://www.google.de/?hl=en")
 driver.find_element_by_link_text("Use Google.com").click()
-wait_until(lambda d: d.current_url.startswith("https://www.google.com/"))
+wait_until(lambda: driver.current_url.startswith("https://www.google.com/"))
 
 # Type in a search query
-wait_until(lambda d: d.find_element_by_name("q"))
+wait_until(lambda: driver.find_element_by_name("q"))
 driver.find_element_by_name("q").send_keys("site:palant.de", Keys.RETURN)
-wait_until(lambda d: d.find_element_by_id("ires"))
+wait_until(lambda: driver.find_element_by_id("ires"))
 
 # Choose a search result
 init_results()
@@ -44,7 +44,7 @@ assert_link_unchanged()
 # Click the search result
 assert_no_intermediate_urls(lambda: result.click(), href)
 driver.back()
-wait_until(lambda d: d.find_element_by_id("ires"))
+wait_until(lambda: driver.find_element_by_id("ires"))
 init_results()
 assert_link_unchanged()
 
@@ -60,7 +60,7 @@ assert_no_intermediate_urls(lambda: chain(
   lambda c: c.key_down(Keys.RETURN).send_keys(Keys.RETURN).key_up(Keys.RETURN),
 ), href)
 driver.back()
-wait_until(lambda d: d.find_element_by_id("ires"))
+wait_until(lambda: driver.find_element_by_id("ires"))
 init_results()
 assert_link_unchanged()
 
@@ -71,22 +71,22 @@ assert_link_unchanged()
 
 # Click Apps button to bring up dropdown
 driver.find_element_by_css_selector("a[title='Apps']").click()
-wait_until(lambda d: d.find_element_by_css_selector("div[aria-label='Apps']"))
+wait_until(lambda: driver.find_element_by_css_selector("div[aria-label='Apps']"))
 
 # Switch off Instant results
 driver.find_element_by_id("abar_button_opt").click()
 driver.find_element_by_css_selector("#ab_options [role='menuitem'] a").click()
-wait_until(lambda d: d.find_element_by_id("instant-radio"))
+wait_until(lambda: driver.find_element_by_id("instant-radio"))
 driver.find_element_by_css_selector("#instant-radio > :last-child").click()
 driver.find_element_by_css_selector("#form-buttons > :first-child").click()
 accept_alert()
-wait_until(lambda d: d.find_element_by_id("ires"))
+wait_until(lambda: driver.find_element_by_id("ires"))
 init_results()
 assert_link_unchanged()
 
 # Click the search result again
 assert_no_intermediate_urls(lambda: result.click(), href)
 driver.back()
-wait_until(lambda d: d.find_element_by_id("ires"))
+wait_until(lambda: driver.find_element_by_id("ires"))
 init_results()
 assert_link_unchanged()
