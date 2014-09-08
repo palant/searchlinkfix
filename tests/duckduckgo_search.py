@@ -3,8 +3,12 @@ result = None
 
 def init_results():
   global results, result
-  results = driver.find_element_by_id("links").find_elements_by_class_name("result__a")
-  result = results[1]
+  results = driver.find_elements_by_css_selector("#links .result__a")
+  if results:
+    result = results[1]
+    return True
+  else:
+    return False
 
 def assert_link_unchanged():
   global result, href
@@ -22,10 +26,9 @@ def assert_no_intermediate_urls(method, target):
 
 # Search for site:palant.de
 driver.get("https://duckduckgo.com/?q=site%3Apalant.de")
-driver.wait_until(lambda: driver.find_element_by_id("links"))
 
 # Choose a search result
-init_results()
+driver.wait_until(init_results)
 href = result.get_attribute("href")
 assert "duckduckgo.com" not in href
 
@@ -38,8 +41,7 @@ assert_link_unchanged()
 # Click the search result
 assert_no_intermediate_urls(lambda: result.click(), href)
 driver.back()
-driver.wait_until(lambda: driver.find_element_by_id("links"))
-init_results()
+driver.wait_until(init_results)
 assert_link_unchanged()
 
 # Middle-click search result

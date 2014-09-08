@@ -3,8 +3,12 @@ result = None
 
 def init_results():
   global results, result
-  results = driver.find_element_by_id("ires").find_elements_by_css_selector(".r > a")
-  result = results[1]
+  results = driver.find_elements_by_css_selector("#ires .r > a")
+  if results:
+    result = results[1]
+    return True
+  else:
+    return False
 
 def assert_link_unchanged():
   global result, href
@@ -28,10 +32,9 @@ driver.wait_until(lambda: driver.current_url.startswith("https://www.google.com/
 # Type in a search query
 driver.wait_until(lambda: driver.find_element_by_name("q"))
 driver.find_element_by_name("q").send_keys("site:palant.de", driver.keys.RETURN)
-driver.wait_until(lambda: driver.find_element_by_id("ires"))
 
 # Choose a search result
-init_results()
+driver.wait_until(init_results)
 href = result.get_attribute("href")
 assert "google.com" not in href
 
@@ -44,8 +47,7 @@ assert_link_unchanged()
 # Click the search result
 assert_no_intermediate_urls(lambda: result.click(), href)
 driver.back()
-driver.wait_until(lambda: driver.find_element_by_id("ires"))
-init_results()
+driver.wait_until(init_results)
 assert_link_unchanged()
 
 # Keyboard navigation
@@ -60,8 +62,7 @@ assert_no_intermediate_urls(lambda: driver.chain(
   lambda c: c.key_down(driver.keys.RETURN).send_keys(driver.keys.RETURN).key_up(driver.keys.RETURN),
 ), href)
 driver.back()
-driver.wait_until(lambda: driver.find_element_by_id("ires"))
-init_results()
+driver.wait_until(init_results)
 assert_link_unchanged()
 
 # Middle-click search result
@@ -80,13 +81,11 @@ driver.wait_until(lambda: driver.find_element_by_id("instant-radio"))
 driver.find_element_by_css_selector("#instant-radio > :last-child").click()
 driver.find_element_by_css_selector("#form-buttons > :first-child").click()
 driver.accept_alert()
-driver.wait_until(lambda: driver.find_element_by_id("ires"))
-init_results()
+driver.wait_until(init_results)
 assert_link_unchanged()
 
 # Click the search result again
 assert_no_intermediate_urls(lambda: result.click(), href)
 driver.back()
-driver.wait_until(lambda: driver.find_element_by_id("ires"))
-init_results()
+driver.wait_until(init_results)
 assert_link_unchanged()

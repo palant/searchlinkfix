@@ -3,8 +3,12 @@ result = None
 
 def init_results():
   global results, result
-  results = driver.find_element_by_class_name("main__content").find_elements_by_class_name("serp-item__title-link")
-  result = results[1]
+  results = driver.find_elements_by_css_selector(".main__content .serp-item__title-link")
+  if results:
+    result = results[1]
+    return True
+  else:
+    return False
 
 def assert_link_unchanged():
   global result, href
@@ -28,10 +32,9 @@ def close_windows(keep):
 
 # Search for site:palant.de
 driver.get("http://yandex.ru/yandsearch?text=site%3Apalant.de")
-driver.wait_until(lambda: driver.find_element_by_class_name("main__content"))
 
 # Choose a search result
-init_results()
+driver.wait_until(init_results)
 href = result.get_attribute("href")
 assert "yandex.ru" not in href
 
@@ -45,7 +48,6 @@ assert_link_unchanged()
 orig_window = driver.current_window_handle
 assert_no_intermediate_urls(lambda: result.click(), href)
 close_windows(keep=orig_window)
-init_results()
 assert_link_unchanged()
 
 # Middle-click search result
