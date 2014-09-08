@@ -20,11 +20,11 @@ def assert_no_intermediate_urls(method, target):
   driver.wait_until(check_urls)
   assert urls[0] == target
 
-def close_windows(leave_open):
-  for h in [h for h in driver.window_handles if h != leave_open]:
+def close_windows(keep):
+  for h in [h for h in driver.window_handles if h != keep]:
     driver.switch_to.window(h)
     driver.close()
-  driver.switch_to.window(leave_open)
+  driver.switch_to.window(keep)
 
 # Search for site:palant.de
 driver.get("http://yandex.ru/yandsearch?text=site%3Apalant.de")
@@ -44,7 +44,7 @@ assert_link_unchanged()
 # Click the search result
 orig_window = driver.current_window_handle
 assert_no_intermediate_urls(lambda: result.click(), href)
-close_windows(orig_window)
+close_windows(keep=orig_window)
 init_results()
 assert_link_unchanged()
 
