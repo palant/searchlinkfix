@@ -2,12 +2,15 @@
 # coding: utf-8
 
 import os
+import sys
 import shutil
 import tempfile
 import re
+import argparse
 from buildtools.packagerGecko import createBuild
 from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
@@ -16,10 +19,17 @@ from selenium.webdriver.common.alert import Alert
 
 default_timeout = 10
 
-def run_tests():
+def run_tests(firefox_path=None):
   basedir = os.path.dirname(__file__)
   driver = None
   profile = FirefoxProfile()
+  if firefox_path:
+    if sys.platform == "darwin" and os.path.isdir(firefox_path):
+      firefox_path = os.path.join(firefox_path, "Contents", "MacOS", "firefox")
+    binary = FirefoxBinary(firefox_path)
+  else:
+    binary = None
+
   try:
     build1 = tempfile.NamedTemporaryFile(mode="wb", suffix=".xpi", delete=False)
     build2 = tempfile.NamedTemporaryFile(mode="wb", suffix=".xpi", delete=False)
@@ -32,7 +42,7 @@ def run_tests():
       os.unlink(build1.name)
       os.unlink(build2.name)
 
-    driver = WebDriver(profile)
+    driver = WebDriver(profile, firefox_binary=binary)
     driver.wait_until = lambda method: WebDriverWait(driver, default_timeout).until(lambda d: method())
     driver.accept_alert = Alert(driver).accept
     driver.keys = Keys
@@ -95,4 +105,7 @@ def run_tests():
     shutil.rmtree(profile.path, ignore_errors=True)
 
 if __name__ == "__main__":
-  run_tests()
+  parser = argparse.ArgumentParser(description="Run unit tests")
+  parser.add_argument("--app", metavar="FIREFOX_PATH", type=unicode, help="Path to the Firefox application")
+  args = parser.parse_args()
+  run_tests(args.app)
