@@ -24,12 +24,8 @@ def assert_no_intermediate_urls(method, target):
   driver.wait_until(check_urls)
   assert urls[0] == target
 
-# Make sure to use google.com
-driver.get("https://www.google.de/?hl=en")
-driver.find_element_by_link_text("Use Google.com").click()
-driver.wait_until(lambda: driver.current_url.startswith("https://www.google.com/"))
-
-# Type in a search query
+# Search for site:palant.de
+driver.get("https://www.google.com/?gfe_rd=cr&hl=en")
 driver.wait_until(lambda: driver.find_element_by_name("q"))
 driver.find_element_by_name("q").send_keys("site:palant.de", driver.keys.RETURN)
 
@@ -53,7 +49,7 @@ assert_link_unchanged()
 # Keyboard navigation
 driver.find_element_by_name("q").click()
 driver.chain(
-  lambda c: c.send_keys(driver.keys.TAB, driver.keys.TAB, driver.keys.DOWN),
+  lambda c: c.send_keys(driver.keys.TAB, driver.keys.TAB, driver.keys.DOWN, driver.keys.DOWN),
 )
 assert driver.switch_to.active_element == result
 
