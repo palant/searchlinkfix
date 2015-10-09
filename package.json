@@ -2,7 +2,7 @@
   "title": "Google search link fix",
   "name": "searchlinkfix",
   "id": "jid0-XWJxt5VvCXkKzQK99PhZqAn7Xbg@jetpack",
-  "version": "1.5",
+  "version": "1.5.1",
   "description": "Prevents Google and Yandex search pages from modifying search result links when you click them. This is useful when copying links but it also helps privacy by preventing the search engines from recording your clicks.",
   "description.ru": "Это расширение не дает поисковым страницам Google и Yandex менять ссылки, когда по ним щелкают. Это полезно при копировании ссылок, но попутно и не дает поисковым страницам следить за вашими щелчками.",
   "main": "index.js",
