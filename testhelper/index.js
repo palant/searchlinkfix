@@ -4,29 +4,32 @@
  * http://mozilla.org/MPL/2.0/.
  */
 
- let {WindowObserver} = require("windowObserver");
+let {Ci, Cu} = require("chrome");
+let events = require("sdk/system/events");
+let utils = require("sdk/window/utils");
 
- new WindowObserver({
-  applyToWindow: function(window)
+function checkWindow(window)
+{
+  console.error("Got window: " + window.location.href)
+  let loadCallback = function()
   {
-    if (!("gBrowser" in window))
-      return;
+    console.error("Window loaded: " + window.location.href)
+    window.removeEventListener("load", loadCallback);
 
-    window.gBrowser.addTabsProgressListener(progressListener);
-    window.gBrowser.addEventListener("testhelper_middleclick", fakeMiddleClick, false, true);
-    window.gBrowser.addEventListener("testhelper_closeBackgroundTabs", closeBackgroundTabs, false, true);
-  },
+    if (utils.isBrowser(window))
+    {
+      console.error("Browser: " + window.location.href)
+      window.gBrowser.addTabsProgressListener(progressListener);
+      window.gBrowser.addEventListener("testhelper_middleclick", fakeMiddleClick, false, true);
+      window.gBrowser.addEventListener("testhelper_closeBackgroundTabs", closeBackgroundTabs, false, true);
+    }
+  };
 
-  removeFromWindow: function(window)
-  {
-    if (!("gBrowser" in window))
-      return;
-
-    window.gBrowser.removeTabsProgressListener(progressListener);
-    window.gBrowser.removeEventListener("testhelper_middleclick", fakeMiddleClick, false, true);
-    window.gBrowser.removeEventListener("testhelper_closeBackgroundTabs", closeBackgroundTabs, false, true);
-  }
-});
+  if (window.document.readyState == "complete")
+    loadCallback();
+  else
+    window.addEventListener("load", loadCallback);
+}
 
 let progressListener =
 {
@@ -58,3 +61,6 @@ function closeBackgroundTabs(event)
     if (browser.tabs[i] != browser.selectedTab)
       browser.removeTab(browser.tabs[i]);
 }
+
+events.on("chrome-document-global-created", event => checkWindow(event.subject), true);
+utils.windows("navigator:browser").forEach(checkWindow);

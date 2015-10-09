@@ -1,8 +1,0 @@
-[general]
-id=testhelper@palant.de
-basename=testhelper
-version=1.0
-author=Wladimir Palant
-
-[compat]
-firefox=16.0/99.0

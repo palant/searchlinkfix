@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import os
-import sys
-import shutil
-import tempfile
-import re
 import argparse
-from buildtools.packagerGecko import createBuild
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+
 from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
@@ -17,7 +18,16 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.alert import Alert
 
-default_timeout = 10
+default_timeout = 100
+
+def jpm_build(dir, output):
+  # Ugly hack: JPM doesn't allow specifying output file name, so we have to
+  # look for new files. See https://github.com/mozilla-jetpack/jpm/issues/315
+  orig_files = set(os.listdir(dir))
+  subprocess.check_call(["jpm", "xpi"], cwd=dir)
+  new_files = set(os.listdir(dir))
+  xpi = os.path.join(dir, (new_files - orig_files).pop())
+  os.rename(xpi, output)
 
 def run_tests(firefox_path=None):
   basedir = os.path.dirname(__file__)
@@ -34,8 +44,8 @@ def run_tests(firefox_path=None):
     build1 = tempfile.NamedTemporaryFile(mode="wb", suffix=".xpi", delete=False)
     build2 = tempfile.NamedTemporaryFile(mode="wb", suffix=".xpi", delete=False)
     try:
-      createBuild(basedir, type="gecko", outFile=build1)
-      createBuild(os.path.join(basedir, "testhelper"), type="gecko", outFile=build2)
+      jpm_build(basedir, build1.name)
+      jpm_build(os.path.join(basedir, "testhelper"), build2.name)
       profile.add_extension(build1.name)
       profile.add_extension(build2.name)
     finally:

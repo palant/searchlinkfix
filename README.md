@@ -3,30 +3,25 @@ Google search link fix
 
 Google search link fix is a Firefox extension that prevents Google and Yandex search pages from modifying search result links when you click them. This is useful when copying links but it also helps privacy by preventing the search engines from recording your clicks. [Detailed description](https://palant.de/2011/11/28/google-yandex-search-link-fix)
 
-Prerequisites
--------------
-* [Python 2.7](https://www.python.org/downloads/)
-* [Jinja2 module for Python](http://jinja.pocoo.org/docs/intro/#installation)
-
 How to build
 ------------
 
-Run the following command:
+You need [jpm](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/jpm) to build Googel search link fix. Run the following command:
 
-    python build.py build
+    jpm xpi
 
-This will create a development build with the file name like `searchlinkfix-1.2.3.nnnn.xpi`. In order to create a release build use the following command:
-
-    python build.py build --release
+This will create a package with the file name like `jid0-XWJxt5VvCXkKzQK99PhZqAn7Xbg@jetpack-n.n.n.xpi` that you can install in Firefox.
 
 How to test
 -----------
 
 Testing your changes is easiest if you install the [Extension Auto-Installer extension](https://addons.mozilla.org/addon/autoinstaller/). Then you can push the current repository state to your browser using the following command:
 
-    python build.py autoinstall 8888
+    jpm post --post-url http://localhost:8888/
 
-Google search link fix will be updated automatically, without any prompts or browser restarts.
+This will install Google search link fix in your browser automatically, without any prompts or browser restarts. You can also ask jpm to reinstall the extension whenever changes in the current directory are detected:
+
+    jpm watchpost --post-url http://localhost:8888/
 
 Integration tests
 -----------------
