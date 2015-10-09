@@ -1,0 +1,17 @@
+{
+  "title": "Integration test helper",
+  "name": "testhelper",
+  "id": "testhelper@palant.de",
+  "version": "1.0.0",
+  "description": "Allows integration tests to listen to URL changes",
+  "main": "index.js",
+  "author": "Wladimir Palant",
+  "permissions": {
+    "private-browsing": true,
+    "multiprocess": true
+  },
+  "engines": {
+    "firefox": "38.0a1 - 99.0"
+  },
+  "license": "MPL-2.0"
+}
