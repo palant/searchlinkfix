@@ -42,6 +42,7 @@ let containerAttr = {
   "google": ["id", "search"],
   "google-groups": ["role", "main"],
   "duckduckgo": ["class", "results"],
+  "google-news": ["class", "content-pane-container"],
 };
 
 function isSearchPage(window)
@@ -57,6 +58,9 @@ function isSearchPage(window)
       return hosts[host];
   }
   catch (e) {}
+
+  if (document.querySelector("meta[name='apple-itunes-app'][content='app-id=913753848']"))
+    return "google-news";
 
   try
   {
@@ -95,6 +99,9 @@ function saveLinkTarget(event)
       break;
 
   currentLinkHref = (currentLink ? currentLink.href : null);
+
+  // Just in case event propagation is canceled
+  setTimeout(restoreLinkTarget, 0);
 }
 
 function restoreLinkTarget(event)
