@@ -18,7 +18,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.alert import Alert
 
-default_timeout = 100
+default_timeout = 10
 
 def jpm_build(dir, output):
   # Ugly hack: JPM doesn't allow specifying output file name, so we have to
