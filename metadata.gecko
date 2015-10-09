@@ -8,5 +8,5 @@ author=Wladimir Palant
 default=https://github.com/palant/searchlinkfix
 
 [compat]
-firefox=17.0/45.0
-seamonkey=2.14/2.41
+firefox=35.0/45.0
+seamonkey=2.33/2.41
