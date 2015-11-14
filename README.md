@@ -6,7 +6,7 @@ Google search link fix is a Firefox extension that prevents Google and Yandex se
 How to build
 ------------
 
-You need [jpm](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/jpm) to build Googel search link fix. Run the following command:
+You need [jpm](https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/jpm) to build Google search link fix. Run the following command:
 
     jpm xpi
 
