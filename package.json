@@ -13,9 +13,9 @@
     "multiprocess": true
   },
   "engines": {
-    "firefox": "38.0a1 - 48.0",
-    "seamonkey": "2.35a1 - 2.35",
-    "fennec": "38.0a1 - 48.0"
+    "firefox": "38.0a1 - 49.0",
+    "seamonkey": "2.42 - 2.46",
+    "fennec": "38.0a1 - 49.0"
   },
   "license": "MPL-2.0"
 }
