@@ -9,7 +9,7 @@ window.addEventListener("mousedown", restoreLinkTarget, false);
 window.addEventListener("click", interceptEvent, true);
 window.addEventListener("keydown", interceptEvent, true);
 
-self.port.on("detach", function(message)
+function detach()
 {
   try
   {
@@ -22,7 +22,9 @@ self.port.on("detach", function(message)
   {
     // Ignore, likely "permission denied" because window has been unloaded
   }
-});
+}
+
+self.port.on("detach", detach);
 
 let currentLink = null;
 let currentLinkHref = null;
@@ -70,6 +72,8 @@ function isSearchPage(window)
   }
   catch (e) {}
 
+  if (document.readyState == "complete")
+    detach();
   return null;
 }
 
