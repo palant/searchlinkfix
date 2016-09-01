@@ -33,6 +33,9 @@ def run_tests(firefox_path=None):
   basedir = os.path.dirname(__file__)
   driver = None
   profile = FirefoxProfile()
+  profile.set_preference('browser.tabs.remote.autostart', False)
+  profile.set_preference('browser.tabs.remote.autostart.1', False)
+  profile.set_preference('browser.tabs.remote.autostart.2', False)
   if firefox_path:
     if sys.platform == "darwin" and os.path.isdir(firefox_path):
       firefox_path = os.path.join(firefox_path, "Contents", "MacOS", "firefox")
