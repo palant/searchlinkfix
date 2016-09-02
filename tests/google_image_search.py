@@ -59,5 +59,5 @@ for result in results:
   assert_link_unchanged()
 
 # Click Apps button to bring up dropdown
-driver.find_element_by_css_selector("a[title='Google Apps']").click()
-driver.wait_until(lambda: driver.find_element_by_css_selector("div[aria-label='Google Apps']").is_displayed())
+driver.find_element_by_css_selector("a[title='Google apps']").click()
+driver.wait_until(lambda: driver.find_element_by_css_selector("div[aria-label='Google apps']").is_displayed())

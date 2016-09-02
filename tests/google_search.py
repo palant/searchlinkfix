@@ -49,7 +49,7 @@ assert_link_unchanged()
 # Keyboard navigation
 driver.find_element_by_name("q").click()
 driver.chain(
-  lambda c: c.send_keys(driver.keys.TAB, driver.keys.TAB, driver.keys.DOWN, driver.keys.DOWN),
+  lambda c: c.send_keys(driver.keys.TAB, driver.keys.TAB, driver.keys.DOWN),
 )
 assert driver.switch_to.active_element == result
 
@@ -67,13 +67,13 @@ driver.close_background_tabs()
 assert_link_unchanged()
 
 # Click Apps button to bring up dropdown
-driver.find_element_by_css_selector("a[title='Google Apps']").click()
-driver.wait_until(lambda: driver.find_element_by_css_selector("div[aria-label='Google Apps']").is_displayed())
-driver.find_element_by_css_selector("a[title='Google Apps']").click()
+driver.find_element_by_css_selector("a[title='Google apps']").click()
+driver.wait_until(lambda: driver.find_element_by_css_selector("div[aria-label='Google apps']").is_displayed())
+driver.find_element_by_css_selector("a[title='Google apps']").click()
 
 # Switch off Instant results
 driver.find_element_by_id("abar_button_opt").click()
-driver.find_element_by_id("abar_button_opt").send_keys(driver.keys.RETURN)
+#driver.find_element_by_id("abar_button_opt").send_keys(driver.keys.RETURN)
 driver.find_element_by_css_selector("#ab_options [role='menuitem'] a").click()
 driver.wait_until(lambda: driver.find_element_by_id("instant-radio"))
 driver.find_element_by_css_selector("#instant-radio > :last-child").click()

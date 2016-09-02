@@ -50,5 +50,5 @@ driver.close_background_tabs()
 assert_link_unchanged()
 
 # Click region button to bring up dropdown
-driver.find_element_by_class_name("js-region-switch-flag").click()
-driver.wait_until(lambda: driver.find_element_by_class_name("popover__box--region"))
+driver.find_element_by_class_name("js-region-filter-icon").click()
+driver.wait_until(lambda: driver.find_element_by_class_name("js-region-filter-input"))

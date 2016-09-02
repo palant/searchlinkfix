@@ -26,7 +26,7 @@ def close_windows(keep):
   driver.switch_to.window(keep)
 
 # Open Google news
-driver.get("https://news.google.com/")
+driver.get("https://news.google.com/?hl=en")
 driver.wait_until(init_results)
 
 # Check link URL
@@ -51,5 +51,5 @@ driver.close_background_tabs()
 assert_link_unchanged()
 
 # Click Apps button to bring up dropdown
-driver.find_element_by_css_selector("a[title='Google Apps']").click()
-driver.wait_until(lambda: driver.find_element_by_css_selector("div[aria-label='Google Apps']").is_displayed())
+driver.find_element_by_css_selector("a[title='Google apps']").click()
+driver.wait_until(lambda: driver.find_element_by_css_selector("div[aria-label='Google apps']").is_displayed())

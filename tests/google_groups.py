@@ -26,7 +26,7 @@ def close_windows(keep):
   driver.switch_to.window(keep)
 
 # Open Groups post
-driver.get("https://groups.google.com/d/msg/play-framework/ZfmjuYnZrzg/2hx2zgq_GugJ")
+driver.get("https://groups.google.com/forum/?hl=en#!msg/play-framework/ZfmjuYnZrzg/2hx2zgq_GugJ")
 driver.wait_until(init_results)
 
 # Check link URL
@@ -51,5 +51,5 @@ driver.close_background_tabs()
 assert_link_unchanged()
 
 # Click Apps button to bring up dropdown
-driver.find_element_by_css_selector("a[title='Google Apps']").click()
-driver.wait_until(lambda: driver.find_element_by_css_selector("div[aria-label='Google Apps']").is_displayed())
+driver.find_element_by_css_selector("a[title='Google apps']").click()
+driver.wait_until(lambda: driver.find_element_by_css_selector("div[aria-label='Google apps']").is_displayed())
