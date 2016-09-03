@@ -4,7 +4,11 @@ href = None
 
 def init_results(driver):
     global result
-    result = driver.find_element_by_partial_link_text('mini-profiler')
+    try:
+        result = driver.find_element('partial link text', 'mini-profiler')
+    except:
+        # Element not found
+        pass
     return result
 
 
@@ -25,19 +29,12 @@ def assert_no_intermediate_urls(driver, method, target):
     assert urls[0] == target
 
 
-def close_windows(driver, keep):
-    for h in [h for h in driver.window_handles if h != keep]:
-        driver.switch_to.window(h)
-        driver.close()
-    driver.switch_to.window(keep)
-
-
 def run(driver):
     global href
 
     # Open Groups post
-    driver.get('https://groups.google.com/forum/?hl=en' +
-               '#!msg/play-framework/ZfmjuYnZrzg/2hx2zgq_GugJ')
+    driver.navigate('https://groups.google.com/forum/?hl=en' +
+                    '#!msg/play-framework/ZfmjuYnZrzg/2hx2zgq_GugJ')
     driver.wait_until(lambda: init_results(driver))
 
     # Check link URL
@@ -45,15 +42,15 @@ def run(driver):
     assert 'google.com' not in href
 
     # Right-click the link
-    driver.chain(lambda c: c.context_click(result))
+    result.context_click()
     assert_link_unchanged()
-    driver.chain(lambda c: c.send_keys(driver.keys.ESCAPE))
+    result.send_keys(driver.keys.ESCAPE)
     assert_link_unchanged()
 
     # Click the link
-    orig_window = driver.current_window_handle
+    orig_window = driver.current_chrome_window_handle
     assert_no_intermediate_urls(driver, lambda: result.click(), href)
-    close_windows(driver, keep=orig_window)
+    driver.close_windows(keep=orig_window)
     assert_link_unchanged()
 
     # Middle-click search result
@@ -62,5 +59,5 @@ def run(driver):
     assert_link_unchanged()
 
     # Click Apps button to bring up dropdown
-    driver.find_element_by_css_selector('a[title="Google apps"]').click()
-    driver.wait_until(lambda: driver.find_element_by_css_selector('div[aria-label="Google apps"]').is_displayed())
+    driver.find_element('css selector', 'a[title="Google apps"]').click()
+    driver.wait_until(lambda: driver.find_element('css selector', 'div[aria-label="Google apps"]').is_displayed())

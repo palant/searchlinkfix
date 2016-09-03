@@ -5,7 +5,7 @@ href = None
 
 def init_results(driver):
     global results, result
-    results = driver.find_elements_by_css_selector('#cse a.gs-title')
+    results = driver.find_elements('css selector', '#cse a.gs-title')
     if results:
         result = results[1]
         return True
@@ -35,7 +35,7 @@ def run(driver):
 
     # Search for test
     url = 'https://www.google.com/cse?cx=001104437084080304350%3An8odfuv0gvi'
-    driver.get(url + '&q=test')
+    driver.navigate(url + '&q=test')
 
     # Choose a search result
     driver.wait_until(lambda: init_results(driver))
@@ -43,14 +43,14 @@ def run(driver):
     assert 'google.com' not in href
 
     # Right-click the search result
-    driver.chain(lambda c: c.context_click(result))
+    result.context_click()
     assert_link_unchanged()
-    driver.chain(lambda c: c.send_keys(driver.keys.ESCAPE))
+    result.send_keys(driver.keys.ESCAPE)
     assert_link_unchanged()
 
     # Click the search result
-    assert_no_intermediate_urls(driver, lambda: result.click(), href)
-    driver.back()
+    with driver.restore_url():
+        assert_no_intermediate_urls(driver, lambda: result.click(), href)
     driver.wait_until(lambda: init_results(driver))
     assert_link_unchanged()
 

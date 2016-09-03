@@ -24,38 +24,31 @@ def assert_no_intermediate_urls(driver, method, target):
     assert urls[0] == target
 
 
-def close_windows(driver, keep):
-    for h in [h for h in driver.window_handles if h != keep]:
-        driver.switch_to.window(h)
-        driver.close()
-    driver.switch_to.window(keep)
-
-
 def run(driver):
     global result, href
 
     # Type in a search query
-    driver.get('https://images.google.com/?hl=en')
-    driver.wait_until(lambda: driver.find_element_by_name('q'))
-    driver.find_element_by_name('q').send_keys('site:palant.de', driver.keys.RETURN)
-    driver.wait_until(lambda: driver.find_element_by_id('ires'))
+    driver.navigate('https://images.google.com/?hl=en')
+    driver.wait_until(lambda: driver.find_element('name', 'q'))
+    driver.find_element('name', 'q').send_keys('site:palant.de', driver.keys.RETURN)
+    driver.wait_until(lambda: driver.find_elements('id', 'ires'))
 
     # Clicking a result image should show the preview on the same page (custom click behavior)
-    orig_url = strip_anchor(driver.current_url)
-    result = driver.find_element_by_id('ires').find_element_by_css_selector('a > img').click()
-    driver.wait_until(lambda: driver.find_element_by_id('irc_bg'))
-    assert orig_url == strip_anchor(driver.current_url)
+    orig_url = strip_anchor(driver.get_url())
+    result = driver.find_element('id', 'ires').find_element('css selector', 'a > img').click()
+    driver.wait_until(lambda: driver.find_elements('id', 'irc_bg'))
+    assert orig_url == strip_anchor(driver.get_url())
 
-    results = driver.find_elements_by_css_selector('a.irc_but[href]')
+    results = driver.find_elements('css selector', 'a.irc_but[href]')
     results = filter(lambda element: element.is_displayed(), results)
     for result in results:
         href = result.get_attribute('href')
         assert 'google.com' not in href
 
         # Right-click the link
-        driver.chain(lambda c: c.context_click(result))
+        result.context_click()
         assert_link_unchanged()
-        driver.chain(lambda c: c.send_keys(driver.keys.ESCAPE))
+        result.send_keys(driver.keys.ESCAPE)
         assert_link_unchanged()
 
         # Middle-click search result
@@ -65,11 +58,11 @@ def run(driver):
 
         # Click the link
         driver.execute_script('arguments[0].setAttribute("target", "_blank");', result)    # cheating
-        orig_window = driver.current_window_handle
+        orig_window = driver.current_chrome_window_handle
         assert_no_intermediate_urls(driver, lambda: result.click(), href)
-        close_windows(driver, keep=orig_window)
+        driver.close_windows(keep=orig_window)
         assert_link_unchanged()
 
     # Click Apps button to bring up dropdown
-    driver.find_element_by_css_selector('a[title="Google apps"]').click()
-    driver.wait_until(lambda: driver.find_element_by_css_selector('div[aria-label="Google apps"]').is_displayed())
+    driver.find_element('css selector', 'a[title="Google apps"]').click()
+    driver.wait_until(lambda: driver.find_element('css selector', 'div[aria-label="Google apps"]').is_displayed())

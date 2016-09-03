@@ -26,21 +26,26 @@ This will install Google search link fix in your browser automatically, without 
 Integration tests
 -----------------
 
-Running the integration tests requires [Selenium Python bindings](http://selenium-python.readthedocs.org/en/latest/installation.html) to be installed. You can run the integration tests with the following command:
+Running the integration tests requires [Marionette Python Client](http://marionette-client.readthedocs.io/en/latest/basics.html#getting-the-client) to be installed. You can run the integration tests with the following command:
 
     python run_tests.py
 
-This will instrument Firefox to test Google search link fix on various websites, all Python files from the `tests` directory will be executed. For these files a global `driver` variable points to a [`WebDriver` instance](http://selenium.googlecode.com/svn/trunk/docs/api/py/webdriver_remote/selenium.webdriver.remote.webdriver.html). In addition to the official API, the following methods and properties are available:
+This will instrument Firefox to test Google search link fix on various websites, all Python files from the `tests` directory will be executed. For these files the `run()` function will be executed with the [Marionette instance](http://marionette-client.readthedocs.io/en/latest/reference.html#marionette) as the only parameter. In addition to the official API, the following methods and properties are available:
 
+* `driver.wait_for_load()` will wait until the current page is fully loaded (note that `Marionette.navigate()` will merely wait until the `DOMContentLoaded` event).
 * `driver.wait_until(method)` will wait until the method returns `True` or time out after 10 seconds.
 * `driver.accept_alert()` accepts an alert box displayed by the webpage.
-* `driver.chain(method, ...)` will call all methods passed in with an [`ActionChains` instance](http://selenium.googlecode.com/svn/trunk/docs/api/py/webdriver/selenium.webdriver.common.action_chains.html) as parameter.
+* `driver.restore_url()` is to be called in the `with` statement and will navigate to previous URL once the `with` statement is exited.
 * `driver.get_urls()` will return the list of URLs the browser navigated to (including redirects) since the previous call.
+* `driver.close_windows(keep)` closes all windows but the one indicated as parameter.
 * `driver.close_background_tabs()` closes all but the currently selected tab in the current browser window.
-* `driver.keys` contains the key constants from [selenium.webdriver.common.keys](http://selenium.googlecode.com/svn/trunk/docs/api/py/webdriver/selenium.webdriver.common.keys.html) module.
+* `driver.keys` contains the key constants from `marionette_driver.keys`.
+* `driver.expected` contains the [built-it wait conditions](http://marionette-client.readthedocs.io/en/latest/reference.html#module-marionette_driver.expected).
 
-The [`WebElement` API](http://selenium.googlecode.com/svn/trunk/docs/api/py/webdriver_remote/selenium.webdriver.remote.webelement.html) has been extended as well:
+The [`HTMLElement` API](http://marionette-client.readthedocs.io/en/latest/reference.html#htmlelement) has been extended as well:
 
-* `element.middle_click()` sends the necessary mouse events to an element to simulate a click with the middle mouse button.
+* `element.click()` emulates a left mouse button click on the element.
+* `element.middle_click()` emulates a middle mouse button click on the element.
+* `element.context_click()` emulates a right mouse button click on the element.
 
-Note that Selenium WebDriver lacks some functionality which is why the testhelper extension is added to the Firefox profile in addition to Google search link fix. This extension is required for `driver.get_urls()`, `driver.close_background_tabs()` and `element.middle_click()` functions to work.
+Note that Marionette lacks a way to track navigated URLs which is why the testhelper extension is added to the Firefox profile in addition to Google search link fix. This extension is required for `driver.get_urls()` functionality.

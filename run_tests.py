@@ -3,19 +3,15 @@
 
 import argparse
 import os
-import shutil
 import subprocess
 import sys
 import tempfile
 
-from selenium.webdriver.firefox.webdriver import WebDriver
-from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
-from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
-from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.alert import Alert
+from marionette_driver.marionette import Marionette, Actions, HTMLElement
+from marionette_driver.addons import Addons
+from marionette_driver import expected
+from marionette_driver.keys import Keys
+from marionette_driver.wait import Wait
 
 default_timeout = 10
 
@@ -32,18 +28,14 @@ def jpm_build(dir, output):
 
 def run_tests(firefox_path=None):
     basedir = os.path.dirname(__file__)
-    driver = None
-    profile = FirefoxProfile()
-    profile.set_preference('browser.tabs.remote.autostart', False)
-    profile.set_preference('browser.tabs.remote.autostart.1', False)
-    profile.set_preference('browser.tabs.remote.autostart.2', False)
-    if firefox_path:
-        if sys.platform == 'darwin' and os.path.isdir(firefox_path):
-            firefox_path = os.path.join(firefox_path,
-                                        'Contents', 'MacOS', 'firefox')
-        binary = FirefoxBinary(firefox_path)
-    else:
-        binary = None
+
+    if sys.platform == 'darwin' and os.path.isdir(firefox_path):
+        firefox_path = os.path.join(firefox_path,
+                                    'Contents', 'MacOS', 'firefox')
+
+    driver = Marionette(app='fxdesktop', bin=firefox_path, gecko_log='-',
+                        prefs={'xpinstall.signatures.required': False})
+    driver.start_session()
 
     try:
         build1 = tempfile.NamedTemporaryFile(mode='wb', suffix='.xpi',
@@ -53,26 +45,33 @@ def run_tests(firefox_path=None):
         try:
             jpm_build(basedir, build1.name)
             jpm_build(os.path.join(basedir, 'testhelper'), build2.name)
-            profile.add_extension(build1.name)
-            profile.add_extension(build2.name)
+
+            addons = Addons(driver)
+            addons.install(build1.name, temp=True)
+            addons.install(build2.name, temp=True)
         finally:
             os.unlink(build1.name)
             os.unlink(build2.name)
 
-        driver = WebDriver(profile, firefox_binary=binary)
-
-        def wait_until(method):
-            WebDriverWait(driver, default_timeout).until(lambda d: method())
-        driver.wait_until = wait_until
-        driver.accept_alert = Alert(driver).accept
+        driver.expected = expected
         driver.keys = Keys
 
-        def chain(*actions):
-            for action in actions:
-                c = ActionChains(driver)
-                action(c)
-                c.perform()
-        driver.chain = chain
+        class restore_url:
+            def __enter__(self):
+                self.url = driver.get_url()
+
+            def __exit__(self, type, value, traceback):
+                driver.navigate('about:blank')
+                driver.navigate(self.url)
+        driver.restore_url = restore_url
+
+        def wait_until(method):
+            Wait(driver, default_timeout).until(lambda d: method())
+        driver.wait_until = wait_until
+
+        def accept_alert():
+            driver.switch_to_alert().accept()
+        driver.accept_alert = accept_alert
 
         max_timestamp = {'value': 0}
 
@@ -80,34 +79,63 @@ def run_tests(firefox_path=None):
             result = []
             prefix = '[testhelper] Loading: '
             new_timestamp = max_timestamp['value']
-            for item in driver.get_log('browser'):
-                timestamp = item['timestamp']
+            with driver.using_context(driver.CONTEXT_CHROME):
+                messages = driver.execute_script(
+                    'return ' +
+                    'Cc["@mozilla.org/consoleservice;1"]' +
+                    '.getService(Ci.nsIConsoleService).getMessageArray()' +
+                    '.map(m => m instanceof Ci.nsIScriptError ? ' +
+                    '[m.timeStamp, m.errorMessage] : [null, null])'
+                )
+            for timestamp, message in messages:
                 if timestamp <= max_timestamp['value']:
                     continue
-                if not item['message'].startswith(prefix):
+                if not message.startswith(prefix):
                     continue
                 if timestamp > new_timestamp:
                     new_timestamp = timestamp
-                result.append(item['message'][len(prefix):])
+                result.append(message[len(prefix):])
             max_timestamp['value'] = new_timestamp
             return result
         driver.get_urls = get_urls
 
+        def close_windows(keep):
+            for h in [h for h in driver.chrome_window_handles if h != keep]:
+                driver.switch_to_window(h)
+                driver.close_chrome_window()
+            driver.switch_to_window(keep)
+        driver.close_windows = close_windows
+
         def close_background_tabs():
-            driver.execute_script('''
-                var event = document.createEvent("Events");
-                event.initEvent("testhelper_closeBackgroundTabs", true, false);
-                document.dispatchEvent(event);
-            ''')
+            current_tab = driver.current_window_handle
+            for h in [h for h in driver.window_handles if h != current_tab]:
+                driver.switch_to_window(h)
+                driver.close()
+            driver.switch_to_window(current_tab)
         driver.close_background_tabs = close_background_tabs
 
+        def wait_for_load():
+            code = 'return document.readyState == "complete";'
+            driver.wait_until(lambda: driver.execute_script(code))
+        driver.wait_for_load = wait_for_load
+
+        def click(self):
+            action = Actions(driver)
+            action.click(self)
+            action.perform()
+        HTMLElement.click = click
+
         def middle_click(self):
-            driver.execute_script('''
-                var event = document.createEvent("Events");
-                event.initEvent("testhelper_middleclick", true, false);
-                arguments[0].dispatchEvent(event);
-            ''', self)
-        WebElement.middle_click = middle_click
+            action = Actions(driver)
+            action.middle_click(self)
+            action.perform()
+        HTMLElement.middle_click = middle_click
+
+        def context_click(self):
+            action = Actions(driver)
+            action.context_click(self)
+            action.perform()
+        HTMLElement.context_click = context_click
 
         testdir = os.path.join(basedir, 'tests')
         for filename in os.listdir(testdir):
@@ -118,13 +146,11 @@ def run_tests(firefox_path=None):
             execfile(filepath, globals)
             globals['run'](driver)
     finally:
-        if driver:
-            driver.quit()
-        shutil.rmtree(profile.path, ignore_errors=True)
+        driver.cleanup()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run unit tests')
-    parser.add_argument('--app', metavar='FIREFOX_PATH', type=unicode,
+    parser.add_argument('app', metavar='firefox-path', type=unicode,
                         help='Path to the Firefox application')
     args = parser.parse_args()
     run_tests(args.app)

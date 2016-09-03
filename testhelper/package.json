@@ -11,7 +11,7 @@
     "multiprocess": true
   },
   "engines": {
-    "firefox": "38.0a1 - 99.0"
+    "firefox": "38.0a1 - *"
   },
   "license": "MPL-2.0"
 }

@@ -5,7 +5,8 @@ href = None
 
 def init_results(driver):
     global results, result
-    results = driver.find_elements_by_css_selector('#search .r > a')
+    driver.wait_for_load()
+    results = driver.find_elements('css selector', '#search .r > a')
     if results:
         result = results[1]
         return True
@@ -34,9 +35,9 @@ def run(driver):
     global href
 
     # Search for site:palant.de
-    driver.get('https://www.google.com/?gfe_rd=cr&hl=en')
-    driver.wait_until(lambda: driver.find_element_by_name('q'))
-    driver.find_element_by_name('q').send_keys('site:palant.de', driver.keys.RETURN)
+    driver.navigate('https://www.google.com/?gfe_rd=cr&hl=en')
+    driver.wait_until(lambda: driver.find_elements('name', 'q'))
+    driver.find_element('name', 'q').send_keys('site:palant.de', driver.keys.RETURN)
 
     # Choose a search result
     driver.wait_until(lambda: init_results(driver))
@@ -44,29 +45,28 @@ def run(driver):
     assert 'google.com' not in href
 
     # Right-click the search result
-    driver.chain(lambda c: c.context_click(result))
+    result.context_click()
     assert_link_unchanged()
-    driver.chain(lambda c: c.send_keys(driver.keys.ESCAPE))
+    result.send_keys(driver.keys.ESCAPE)
     assert_link_unchanged()
 
     # Click the search result
-    assert_no_intermediate_urls(driver, lambda: result.click(), href)
-    driver.back()
+    with driver.restore_url():
+        assert_no_intermediate_urls(driver, lambda: result.click(), href)
     driver.wait_until(lambda: init_results(driver))
     assert_link_unchanged()
 
     # Keyboard navigation
-    driver.find_element_by_name('q').click()
-    driver.chain(
-      lambda c: c.send_keys(driver.keys.TAB, driver.keys.TAB, driver.keys.DOWN),
-    )
-    assert driver.switch_to.active_element == result
+    search_field = driver.find_element('name', 'q')
+    search_field.click()
+    search_field.send_keys(driver.keys.TAB, driver.keys.TAB, driver.keys.DOWN)
+    assert driver.execute_script('return document.activeElement == arguments[0]', [result])
 
     # Press Enter on a search result
-    assert_no_intermediate_urls(driver, lambda: driver.chain(
-        lambda c: c.key_down(driver.keys.RETURN).send_keys(driver.keys.RETURN).key_up(driver.keys.RETURN),
-    ), href)
-    driver.back()
+    with driver.restore_url():
+        assert_no_intermediate_urls(driver,
+                                    lambda: result.send_keys(driver.keys.RETURN),
+                                    href)
     driver.wait_until(lambda: init_results(driver))
     assert_link_unchanged()
 
@@ -76,22 +76,23 @@ def run(driver):
     assert_link_unchanged()
 
     # Click Apps button to bring up dropdown
-    driver.find_element_by_css_selector('a[title="Google apps"]').click()
-    driver.wait_until(lambda: driver.find_element_by_css_selector('div[aria-label="Google apps"]').is_displayed())
-    driver.find_element_by_css_selector('a[title="Google apps"]').click()
+    driver.find_element('css selector', 'a[title="Google apps"]').click()
+    driver.wait_until(lambda: driver.find_element('css selector', 'div[aria-label="Google apps"]').is_displayed())
+    driver.find_element('css selector', 'a[title="Google apps"]').click()
 
     # Switch off Instant results
-    driver.find_element_by_id('abar_button_opt').click()
-    driver.find_element_by_css_selector('#ab_options [role="menuitem"] a').click()
-    driver.wait_until(lambda: driver.find_element_by_id('instant-radio'))
-    driver.find_element_by_css_selector('#instant-radio > :last-child').click()
-    driver.find_element_by_css_selector('#form-buttons > :first-child').click()
+    driver.find_element('id', 'abar_button_opt').click()
+    driver.find_element('css selector', '#ab_options [role="menuitem"] a').click()
+    driver.wait_until(lambda: driver.find_elements('css selector', '#instant-radio > :last-child'))
+    driver.execute_script('window.scrollBy(0, 100000);')
+    driver.find_element('css selector', '#instant-radio > :last-child').click()
+    driver.find_element('css selector', '#form-buttons > :first-child').click()
     driver.accept_alert()
     driver.wait_until(lambda: init_results(driver))
     assert_link_unchanged()
 
     # Click the search result again
-    assert_no_intermediate_urls(driver, lambda: result.click(), href)
-    driver.back()
+    with driver.restore_url():
+        assert_no_intermediate_urls(driver, lambda: result.click(), href)
     driver.wait_until(lambda: init_results(driver))
     assert_link_unchanged()
