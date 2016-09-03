@@ -13,6 +13,8 @@ function detach()
 {
   try
   {
+    self.port.off("detach", detach);
+
     window.removeEventListener("mousedown", saveLinkTarget, true);
     window.removeEventListener("mousedown", restoreLinkTarget, false);
     window.removeEventListener("click", interceptEvent, true);
