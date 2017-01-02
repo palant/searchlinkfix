@@ -12,8 +12,8 @@ let url = require("url");
 
 let del = require("del");
 let gulp = require("gulp");
-let zip = require("gulp-zip");
 let eslint = require("gulp-eslint");
+let zip = require("gulp-zip");
 
 let utils = require("./gulp-utils");
 
@@ -38,9 +38,10 @@ function getBuildFileName(extension)
   return [dir, filename];
 }
 
-function buildZIP(filename)
+function buildZIP(filename, manifestModifier)
 {
   return gulp.src(sources, {cwdbase: true})
+      .pipe(utils.jsonModify("manifest.json", manifestModifier))
       .pipe(zip(filename));
 }
 
@@ -80,14 +81,19 @@ gulp.task("xpi", ["validate"], function()
 {
   let manifest = require("./manifest.json");
   let [dir, filename] = getBuildFileName("xpi");
-  return buildZIP(filename)
-      .pipe(gulp.dest(dir));
+  return buildZIP(filename, function(manifestData)
+  {
+    delete manifestData.minimum_chrome_version;
+  }).pipe(gulp.dest(dir));
 });
 
 gulp.task("crx", ["validate"], function()
 {
   let [dir, filename] = getBuildFileName("zip");
-  let result = buildZIP(filename);
+  let result = buildZIP(filename, function(manifestData)
+  {
+    delete manifestData.applications;
+  });
   let keyFile = utils.readArg("--private-key=");
   if (keyFile)
     result = result.pipe(utils.signCRX(keyFile));

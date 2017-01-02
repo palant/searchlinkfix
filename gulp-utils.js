@@ -7,6 +7,7 @@
 "use strict";
 
 let fs = require("fs");
+let path = require("path");
 
 let Transform = require("stream").Transform;
 
@@ -28,6 +29,12 @@ function transform(modifier, opts)
   let stream = new Transform({objectMode: true});
   stream._transform = function(file, encoding, callback)
   {
+    if (file.isDirectory())
+    {
+      callback(null, file);
+      return;
+    }
+
     if (!file.isBuffer())
       throw new Error("Unexpected file type");
 
@@ -55,6 +62,19 @@ function transform(modifier, opts)
   return stream;
 }
 exports.transform = transform;
+
+exports.jsonModify = function(filename, modifier)
+{
+  return transform((filepath, contents) =>
+  {
+    if (!modifier || path.basename(filepath) != filename)
+      return [filepath, contents];
+
+    let data = JSON.parse(contents);
+    data = modifier(data) || data;
+    return [filepath, JSON.stringify(data, null, 2)];
+  });
+};
 
 exports.signCRX = function(keyFile)
 {
