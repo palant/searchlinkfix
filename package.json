@@ -1,21 +1,74 @@
 {
-  "title": "Google search link fix",
-  "name": "searchlinkfix",
-  "id": "jid0-XWJxt5VvCXkKzQK99PhZqAn7Xbg@jetpack",
-  "version": "1.5.4",
-  "description": "Prevents Google and Yandex search pages from modifying search result links when you click them. This is useful when copying links but it also helps privacy by preventing the search engines from recording your clicks.",
-  "description.ru": "Это расширение не дает поисковым страницам Google и Yandex менять ссылки, когда по ним щелкают. Это полезно при копировании ссылок, но попутно и не дает поисковым страницам следить за вашими щелчками.",
-  "main": "index.js",
-  "author": "Wladimir Palant",
-  "homepage": "https://github.com/palant/searchlinkfix",
-  "permissions": {
-    "private-browsing": true,
-    "multiprocess": true
+  "license": "MPL-2.0",
+  "devDependencies": {
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-eslint": "^3.0.1",
+    "gulp-zip": "^3.2.0",
+    "node-rsa": "^0.4.2"
   },
-  "engines": {
-    "firefox": "38.0a1 - 52.0",
-    "seamonkey": "2.42 - 2.49",
-    "fennec": "38.0a1 - 52.0"
-  },
-  "license": "MPL-2.0"
+  "eslintConfig": {
+    "extends": "eslint:recommended",
+    "parserOptions": {
+      "ecmaVersion": 6
+    },
+    "globals": {
+      "console": false
+    },
+    "rules": {
+      "no-console": "off",
+      "no-unused-vars": "off",
+      "array-bracket-spacing": "error",
+      "arrow-spacing": "error",
+      "brace-style": [
+        "error",
+        "allman"
+      ],
+      "comma-spacing": "error",
+      "comma-style": "error",
+      "consistent-return": "error",
+      "computed-property-spacing": "error",
+      "eol-last": "error",
+      "indent": [
+        "error",
+        2
+      ],
+      "key-spacing": "error",
+      "keyword-spacing": "error",
+      "linebreak-style": "error",
+      "new-parens": "error",
+      "no-spaced-func": "error",
+      "no-trailing-spaces": "error",
+      "no-var": "error",
+      "no-whitespace-before-property": "error",
+      "object-curly-spacing": "error",
+      "operator-assignment": "error",
+      "operator-linebreak": "error",
+      "padded-blocks": [
+        "error",
+        "never"
+      ],
+      "prefer-rest-params": "warn",
+      "prefer-spread": "warn",
+      "require-yield": "warn",
+      "quotes": [
+        "error",
+        "double",
+        {
+          "avoidEscape": true
+        }
+      ],
+      "semi": "error",
+      "semi-spacing": "error",
+      "space-before-function-paren": [
+        "error",
+        "never"
+      ],
+      "space-in-parens": "error",
+      "space-infix-ops": "error",
+      "space-unary-ops": "error",
+      "spaced-comment": "error",
+      "yield-star-spacing": "error"
+    }
+  }
 }

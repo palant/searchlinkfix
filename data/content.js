@@ -13,20 +13,16 @@ function detach()
 {
   try
   {
-    self.port.off("detach", detach);
-
     window.removeEventListener("mousedown", saveLinkTarget, true);
     window.removeEventListener("mousedown", restoreLinkTarget, false);
     window.removeEventListener("click", interceptEvent, true);
     window.removeEventListener("keydown", interceptEvent, true);
   }
-  catch(e)
+  catch (e)
   {
     // Ignore, likely "permission denied" because window has been unloaded
   }
 }
-
-self.port.on("detach", detach);
 
 let currentLink = null;
 let currentLinkHref = null;
@@ -61,18 +57,29 @@ function isSearchPage(window)
     if (hosts.hasOwnProperty(host))
       return hosts[host];
   }
-  catch (e) {}
+  catch (e)
+  {
+    // Getting host could throw on special pages
+  }
 
   if (document.querySelector("meta[name='apple-itunes-app'][content='app-id=913753848']"))
     return "google-news";
 
-  try
-  {
-    let g = unsafeWindow.google;
-    if (g && (g.sn || g.search))
-      return "google";
-  }
-  catch (e) {}
+  // Detect Google search pages by running some code in their context
+  let eventName = "searchlinkfix" + Math.random();
+  let script = document.createElement("script");
+  script.async = false;
+  script.textContent = "if (window.google && (window.google.sn || window.google.search))" +
+                         "window.dispatchEvent(new Event('" + eventName + "'))";
+
+  let isGoogle = false;
+  let handler = () => isGoogle = true;
+  window.addEventListener(eventName, handler, true);
+  document.documentElement.appendChild(script);
+  document.documentElement.removeChild(script);
+  window.removeEventListener(eventName, handler, true);
+  if (isGoogle)
+    return "google";
 
   if (document.readyState == "complete")
     detach();

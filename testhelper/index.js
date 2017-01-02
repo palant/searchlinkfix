@@ -24,8 +24,7 @@ function checkWindow(window)
     window.addEventListener("load", loadCallback);
 }
 
-let progressListener =
-{
+let progressListener = {
   onStateChange: function(browser, webProgress, request, flags, status)
   {
     if (!(flags & Ci.nsIWebProgressListener.STATE_IS_WINDOW))

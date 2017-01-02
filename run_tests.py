@@ -16,6 +16,10 @@ from marionette_driver.wait import Wait
 default_timeout = 10
 
 
+def gulp_build(dir, output):
+    subprocess.check_call(['gulp', 'xpi', '--outfile=' + output], cwd=dir)
+
+
 def jpm_build(dir, output):
     # Ugly hack: JPM doesn't allow specifying output file name, so we have to
     # look for new files. See https://github.com/mozilla-jetpack/jpm/issues/315
@@ -43,7 +47,7 @@ def run_tests(firefox_path=None):
         build2 = tempfile.NamedTemporaryFile(mode='wb', suffix='.xpi',
                                              delete=False)
         try:
-            jpm_build(basedir, build1.name)
+            gulp_build(basedir, build1.name)
             jpm_build(os.path.join(basedir, 'testhelper'), build2.name)
 
             addons = Addons(driver)

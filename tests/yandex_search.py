@@ -6,7 +6,7 @@ href = None
 def init_results(driver):
     global results, result
     driver.wait_for_load()
-    results = driver.find_elements('css selector', '.main__content .serp-item__title-link')
+    results = driver.find_elements('css selector', '.main__content .organic__url')
     if results:
         result = results[1]
         return True

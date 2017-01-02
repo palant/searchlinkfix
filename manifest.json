@@ -1,0 +1,28 @@
+{
+  "manifest_version": 2,
+  "version": "1.5.4",
+  "minimum_chrome_version": "49.0",
+  "applications": {
+    "gecko": {
+      "id": "jid0-XWJxt5VvCXkKzQK99PhZqAn7Xbg@jetpack"
+    }
+  },
+  "default_locale": "en",
+  "name": "__MSG_name__",
+  "short_name": "__MSG_name__",
+  "description": "__MSG_description__",
+  "author": "Wladimir Palant",
+  "homepage_url": "https://github.com/palant/searchlinkfix",
+  "icons": {
+    "48": "icon.png",
+    "64": "icon64.png",
+    "128": "icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "run_at": "document_start",
+      "js": ["data/content.js"]
+    }
+  ]
+}
