@@ -66,20 +66,23 @@ function isSearchPage(window)
     return "google-news";
 
   // Detect Google search pages by running some code in their context
-  let eventName = "searchlinkfix" + Math.random();
-  let script = document.createElement("script");
-  script.async = false;
-  script.textContent = "if (window.google && (window.google.sn || window.google.search))" +
-                         "window.dispatchEvent(new Event('" + eventName + "'))";
+  if (document instanceof HTMLDocument)
+  {
+    let eventName = "searchlinkfix" + Math.random();
+    let script = document.createElement("script");
+    script.async = false;
+    script.textContent = "if (window.google && (window.google.sn || window.google.search))" +
+                           "window.dispatchEvent(new Event('" + eventName + "'))";
 
-  let isGoogle = false;
-  let handler = () => isGoogle = true;
-  window.addEventListener(eventName, handler, true);
-  document.documentElement.appendChild(script);
-  document.documentElement.removeChild(script);
-  window.removeEventListener(eventName, handler, true);
-  if (isGoogle)
-    return "google";
+    let isGoogle = false;
+    let handler = () => isGoogle = true;
+    window.addEventListener(eventName, handler, true);
+    document.documentElement.appendChild(script);
+    document.documentElement.removeChild(script);
+    window.removeEventListener(eventName, handler, true);
+    if (isGoogle)
+      return "google";
+  }
 
   if (document.readyState == "complete")
     detach();
