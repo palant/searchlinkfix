@@ -38,7 +38,7 @@ function transform(modifier, opts)
     if (!file.isBuffer())
       throw new Error("Unexpected file type");
 
-    if (opts.files && opts.files.indexOf(file.path) < 0)
+    if (opts.files && opts.files.indexOf(path.basename(file.path)) < 0)
     {
       callback(null, file);
       return;
@@ -67,13 +67,10 @@ exports.jsonModify = function(filename, modifier)
 {
   return transform((filepath, contents) =>
   {
-    if (!modifier || path.basename(filepath) != filename)
-      return [filepath, contents];
-
     let data = JSON.parse(contents);
     data = modifier(data) || data;
     return [filepath, JSON.stringify(data, null, 2)];
-  });
+  }, {files: [filename]});
 };
 
 exports.signCRX = function(keyFile)
