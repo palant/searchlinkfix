@@ -84,6 +84,7 @@ gulp.task("xpi", ["validate"], function()
   return buildZIP(filename, function(manifestData)
   {
     delete manifestData.minimum_chrome_version;
+    delete manifestData.minimum_opera_version;
   }).pipe(gulp.dest(dir));
 });
 
