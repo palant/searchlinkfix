@@ -5,7 +5,7 @@ href = None
 def init_results(driver):
     global result
     driver.wait_for_load()
-    result = driver.find_element('css selector', 'a.article')
+    result = driver.find_element('css selector', 'a[role=heading]')
     return result
 
 
