@@ -20,11 +20,14 @@ def gulp_build(dir, output):
     subprocess.check_call(['gulp', 'xpi', '--outfile=' + output], cwd=dir)
 
 
-def jpm_build(dir, output):
+def jpm_build(basedir, dir, output):
     # Ugly hack: JPM doesn't allow specifying output file name, so we have to
     # look for new files. See https://github.com/mozilla-jetpack/jpm/issues/315
     orig_files = set(os.listdir(dir))
-    subprocess.check_call(['jpm', 'xpi'], cwd=dir)
+    jpm_path = os.path.join(basedir, 'node_modules', '.bin', 'jpm')
+    if sys.platform == 'win32':
+        jpm_path += '.exe'
+    subprocess.check_call([os.path.abspath(jpm_path), 'xpi'], cwd=dir)
     new_files = set(os.listdir(dir))
     xpi = os.path.join(dir, (new_files - orig_files).pop())
     os.rename(xpi, output)
@@ -48,7 +51,7 @@ def run_tests(firefox_path=None):
                                              delete=False)
         try:
             gulp_build(basedir, build1.name)
-            jpm_build(os.path.join(basedir, 'testhelper'), build2.name)
+            jpm_build(basedir, os.path.join(basedir, 'testhelper'), build2.name)
 
             addons = Addons(driver)
             addons.install(build1.name, temp=True)
