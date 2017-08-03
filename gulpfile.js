@@ -38,10 +38,26 @@ function getBuildFileName(extension)
   return [dir, filename];
 }
 
+function modifyManifest(modifier)
+{
+  return utils.transform((filepath, contents) =>
+  {
+    let manifest = JSON.parse(contents);
+    manifest = modifier(manifest) || manifest;
+    return utils.download("https://www.google.com/supported_domains").then(data =>
+    {
+      let additionalDomains = data.trim().split(/\s+/).map(domain => `*://*${domain}/*`);
+      additionalDomains.sort();
+      manifest.content_scripts[0].matches.push(...additionalDomains);
+      return [filepath, JSON.stringify(manifest, null, 2)];
+    });
+  }, {files: ["manifest.json"]});
+}
+
 function buildZIP(filename, manifestModifier)
 {
   return gulp.src(sources, {cwdbase: true})
-      .pipe(utils.jsonModify("manifest.json", manifestModifier))
+      .pipe(modifyManifest(manifestModifier))
       .pipe(zip(filename));
 }
 

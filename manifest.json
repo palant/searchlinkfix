@@ -21,7 +21,15 @@
   },
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*"],
+      "matches": [
+        "*://*.yandex.com/*",
+        "*://*.yandex.com.tr/*",
+        "*://*.yandex.by/*",
+        "*://*.yandex.kz/*",
+        "*://*.yandex.ru/*",
+        "*://*.yandex.ua/*",
+        "*://*.duckduckgo.com/*"
+      ],
       "run_at": "document_start",
       "js": ["data/content.js"]
     }

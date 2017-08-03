@@ -63,16 +63,6 @@ function transform(modifier, opts)
 }
 exports.transform = transform;
 
-exports.jsonModify = function(filename, modifier)
-{
-  return transform((filepath, contents) =>
-  {
-    let data = JSON.parse(contents);
-    data = modifier(data) || data;
-    return [filepath, JSON.stringify(data, null, 2)];
-  }, {files: [filename]});
-};
-
 exports.signCRX = function(keyFile)
 {
   return transform((filepath, contents) =>
@@ -103,4 +93,32 @@ exports.signCRX = function(keyFile)
       return [filepath.replace(/\.zip$/, ".crx"), contents];
     });
   }, {raw: true});
+};
+
+exports.download = function(url)
+{
+  return new Promise((resolve, reject) =>
+  {
+    let https = require("https");
+    let request = https.get(url, response =>
+    {
+      if (response.statusCode != 200)
+      {
+        reject(new Error("Unexpected status code: " + response.statusCode));
+        response.resume();
+        return;
+      }
+
+      let data = "";
+      response.on("data", chunk =>
+      {
+        data += chunk;
+      });
+      response.on("end", () =>
+      {
+        resolve(data);
+      });
+    });
+    request.on("error", error => reject(new Error(error.message)));
+  });
 };
