@@ -34,6 +34,16 @@ def assert_no_intermediate_urls(driver, method, target):
 def run(driver):
     global href
 
+    # Spoof Firefox for Mobile
+    driver.set_context(driver.CONTEXT_CHROME)
+    driver.execute_script(
+        'Cc["@mozilla.org/preferences-service;1"]' +
+        '.getService(Ci.nsIPrefService)' +
+        '.QueryInterface(Ci.nsIPrefBranch)' +
+        '.setCharPref("general.useragent.override", "Mozilla/5.0 (Mobile; rv:55.0) Gecko/55.0 Firefox/55.0");'
+    )
+    driver.set_context(driver.CONTEXT_CONTENT)
+
     # Search for site:palant.de
     driver.navigate('https://www.google.com/?gfe_rd=cr&hl=en')
     driver.wait_until(lambda: driver.find_elements('name', 'q'))
@@ -70,3 +80,13 @@ def run(driver):
     assert_no_intermediate_urls(driver, lambda: result.middle_click(), href)
     driver.close_background_tabs()
     assert_link_unchanged()
+
+    # Clear User-Agent Spoof
+    driver.set_context(driver.CONTEXT_CHROME)
+    driver.execute_script(
+        'Cc["@mozilla.org/preferences-service;1"]' +
+        '.getService(Ci.nsIPrefService)' +
+        '.QueryInterface(Ci.nsIPrefBranch)' +
+        '.clearUserPref("general.useragent.override");'
+    )
+    driver.set_context(driver.CONTEXT_CONTENT)
