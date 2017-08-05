@@ -8,6 +8,7 @@ window.addEventListener("mousedown", saveLinkTarget, true);
 window.addEventListener("mousedown", restoreLinkTarget, false);
 window.addEventListener("click", interceptEvent, true);
 window.addEventListener("keydown", interceptEvent, true);
+window.addEventListener("DOMContentLoaded", fixLinks, false);
 
 function detach()
 {
@@ -17,6 +18,7 @@ function detach()
     window.removeEventListener("mousedown", restoreLinkTarget, false);
     window.removeEventListener("click", interceptEvent, true);
     window.removeEventListener("keydown", interceptEvent, true);
+    window.removeEventListener("DOMContentLoaded", fixLinks, false);
   }
   catch (e)
   {
@@ -44,6 +46,7 @@ let containerAttr = {
   "duckduckgo": ["class", "results"],
   "google-news": ["class", "content-pane-container"],
 };
+
 
 function isSearchPage(window)
 {
@@ -151,3 +154,28 @@ function interceptEvent(event)
     event.stopPropagation();
   }
 }
+
+function fixLinks()
+{
+  // fix all links on the Google Web Search for Mobile.
+  if (/google\./.test(window.location.host))
+  {
+    if (isSearchPage(window))
+    {
+      for (let link of window.document.links)
+      {
+        if (/\/\/[a-z]+\.google[^\/]+\/url\?/.exec(link.href))
+        {
+          let url = null;
+          for (let pair of link.search.substring(1).split("&"))
+          {
+            let pairarr = pair.split("=", 2);
+            if ((pairarr[0] === "q") || (pairarr[0] === "url"))
+              link.href = decodeURIComponent(pairarr[1]);
+          }
+        }
+      }
+    }
+  }
+}
+console.log("x");
