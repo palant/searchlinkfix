@@ -48,7 +48,7 @@ function modifyManifest(modifier)
     {
       let additionalDomains = data.trim().split(/\s+/).map(domain => `*://*${domain}/*`);
       additionalDomains.sort();
-      manifest.content_scripts[0].matches.push(...additionalDomains);
+      manifest.content_scripts[0].matches.unshift(...additionalDomains);
       return [filepath, JSON.stringify(manifest, null, 2)];
     });
   }, {files: ["manifest.json"]});
