@@ -101,6 +101,7 @@ gulp.task("xpi", ["validate"], function()
   {
     delete manifestData.minimum_chrome_version;
     delete manifestData.minimum_opera_version;
+    manifestData.permissions = ["http://*/*", "https://*/*"];
   }).pipe(gulp.dest(dir));
 });
 
