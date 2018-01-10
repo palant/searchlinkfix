@@ -107,7 +107,8 @@ function isSearchResult(link)
 
 function saveLinkTarget(event)
 {
-  if (!isSearchPage(event.target.ownerDocument.defaultView))
+  let type = isSearchPage(event.target.ownerDocument.defaultView);
+  if (!type)
     return;
 
   for (currentLink = event.target; currentLink; currentLink = currentLink.parentNode)
@@ -115,6 +116,9 @@ function saveLinkTarget(event)
       break;
 
   currentLinkHref = (currentLink ? currentLink.href : null);
+
+  if (type == "yandex" && currentLink)
+    currentLink.removeAttribute("data-counter");
 
   // Just in case event propagation is canceled
   setTimeout(restoreLinkTarget, 0);
