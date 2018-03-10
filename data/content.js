@@ -32,6 +32,7 @@ let hosts = {
   "yandex.com": "yandex",
   "yandex.com.tr": "yandex",
   "yandex.by": "yandex",
+  "yandex.fr": "yandex",
   "yandex.kz": "yandex",
   "yandex.ru": "yandex",
   "yandex.ua": "yandex",
