@@ -1,7 +1,10 @@
 /node_modules/
+/build-edge/
 *.xpi
 *.zip
 *.crx
+*.appx
 *.pyc
 *.sh
 *.pem
+package-lock.json
