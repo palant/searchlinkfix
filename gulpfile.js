@@ -20,7 +20,7 @@ let request = require("request");
 
 let utils = require("./gulp-utils");
 
-let sources = ["manifest.json", "data/**/*", "_locales/**/*", "icon*.png", "LICENSE.TXT"];
+let sources = ["manifest.json", "data/**/*", "_locales/**/*", "icon*.png", "LICENSE.txt"];
 
 function getBuildFileName(extension)
 {
