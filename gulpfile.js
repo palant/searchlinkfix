@@ -61,7 +61,11 @@ function buildZIP(filename, manifestModifier)
       .pipe(zip(filename));
 }
 
-gulp.task("default", ["xpi"], function()
+gulp.task("default", ["all"], function()
+{
+});
+
+gulp.task("all", ["xpi", "crx"], function()
 {
 });
 
