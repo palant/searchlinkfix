@@ -69,31 +69,15 @@ gulp.task("all", ["xpi", "crx"], function()
 {
 });
 
-gulp.task("eslint-node", function()
+gulp.task("eslint", function()
 {
-  return gulp.src(["*.js"])
-             .pipe(eslint({envs: ["node", "es6"]}))
+  return gulp.src(["*.js", "data/**/*.js", "testhelper/**/*.js"])
+             .pipe(eslint())
              .pipe(eslint.format())
              .pipe(eslint.failAfterError());
 });
 
-gulp.task("eslint-commonjs", function()
-{
-  return gulp.src(["testhelper/**/*.js"])
-             .pipe(eslint({envs: ["commonjs", "es6"]}))
-             .pipe(eslint.format())
-             .pipe(eslint.failAfterError());
-});
-
-gulp.task("eslint-data", function()
-{
-  return gulp.src(["data/**/*.js"])
-             .pipe(eslint({envs: ["browser", "es6"]}))
-             .pipe(eslint.format())
-             .pipe(eslint.failAfterError());
-});
-
-gulp.task("validate", ["eslint-node", "eslint-commonjs", "eslint-data"], function()
+gulp.task("validate", ["eslint"], function()
 {
 });
 
