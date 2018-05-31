@@ -1,0 +1,8 @@
+{
+  "name": {
+    "message": "Google search link fix"
+  },
+  "description": {
+    "message": "Empêche les pages de recherche Google et Yandex de modifier les liens de résultats de recherche lorsque vous cliquez dessus."
+  }
+}
