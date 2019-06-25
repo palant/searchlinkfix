@@ -15,8 +15,6 @@ let del = require("del");
 let gulp = require("gulp");
 let eslint = require("gulp-eslint");
 let zip = require("gulp-zip");
-let merge = require("merge-stream");
-let request = require("request");
 
 let utils = require("./gulp-utils");
 
@@ -95,78 +93,6 @@ gulp.task("crx", gulp.series("validate", function()
   }).pipe(gulp.dest(dir || process.cwd()));
 }));
 
-gulp.task("build-edge", gulp.series("validate", function()
-{
-  let version = require("./manifest.json").version;
-  while (version.split(".").length < 4)
-    version += ".0";
-
-  return merge(
-    gulp.src(["edge/**/*.xml", "edge/**/*.png"])
-        .pipe(utils.transform((filepath, contents) =>
-        {
-          return [filepath, contents.replace(/{{version}}/g, version)];
-        }), {files: ["appxmanifest.xml"]})
-        .pipe(gulp.dest("build-edge/extension")),
-    gulp.src("_locales/*/messages.json")
-        .pipe(utils.transform((filepath, contents) =>
-        {
-          let data = JSON.parse(contents);
-          contents = JSON.stringify({
-            "DisplayName": data.name.message,
-            "_DisplayName.comment": "",
-            "Description": data.description.message,
-            "_Description.comment": ""
-          }, null, 2);
-          let locale = path.basename(path.dirname(filepath));
-          return [`${locale}/resources.resjson`, contents];
-        }))
-        .pipe(gulp.dest("build-edge/extension/Resources/<locale>")),
-    gulp.src(sources, {base: process.cwd()})
-        .pipe(modifyManifest(manifestData =>
-        {
-          manifestData.permissions = ["http://*/*", "https://*/*"];
-        }))
-        .pipe(gulp.dest("build-edge/extension/Extension"))
-  );
-}));
-
-gulp.task("build-edge/extension.zip", gulp.series("build-edge", function()
-{
-  return gulp.src([
-    "build-edge/**",
-    "!build-edge/**/*.zip"
-  ]).pipe(zip("extension.zip")).pipe(gulp.dest("build-edge"));
-}));
-
-gulp.task("appx", gulp.series("build-edge/extension.zip", function(callback)
-{
-  let [dir, filename] = getBuildFileName("appx");
-
-  const endpoint = "https://cloudappx.azurewebsites.net/v3/build";
-  let req = request.post({
-    url: endpoint,
-    encoding: null
-  }, (err, response, responseBody) =>
-  {
-    if (err)
-    {
-      callback(err);
-      return;
-    }
-
-    if (response.statusCode != 200)
-    {
-      callback(new Error(`Calling CloudAppX service failed: ${response.statusCode} ${response.statusMessage} (${responseBody})`));
-      return;
-    }
-
-    fs.writeFile(path.join(dir, filename), responseBody, callback);
-  });
-
-  req.form().append("xml", fs.createReadStream("build-edge/extension.zip"));
-}));
-
 gulp.task("test", gulp.series("validate", function()
 {
   let firefoxPath = utils.readArg("--firefox-path=");
@@ -185,8 +111,8 @@ gulp.task("test", gulp.series("validate", function()
 
 gulp.task("clean", function()
 {
-  return del(["build-edge", "*.xpi", "*.zip", "*.crx", "*.appx"]);
+  return del(["build-edge", "*.xpi", "*.zip", "*.crx"]);
 });
 
-gulp.task("all", gulp.parallel("xpi", "crx", "appx"));
+gulp.task("all", gulp.parallel("xpi", "crx"));
 gulp.task("default", gulp.parallel("all"));
