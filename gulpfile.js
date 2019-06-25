@@ -89,14 +89,10 @@ gulp.task("xpi", gulp.series("validate", function()
 gulp.task("crx", gulp.series("validate", function()
 {
   let [dir, filename] = getBuildFileName("zip");
-  let result = buildZIP(filename, function(manifestData)
+  return buildZIP(filename, function(manifestData)
   {
     delete manifestData.applications;
-  });
-  let keyFile = utils.readArg("--private-key=");
-  if (keyFile)
-    result = result.pipe(utils.signCRX(keyFile));
-  return result.pipe(gulp.dest(dir || process.cwd()));
+  }).pipe(gulp.dest(dir || process.cwd()));
 }));
 
 gulp.task("build-edge", gulp.series("validate", function()

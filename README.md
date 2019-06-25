@@ -21,11 +21,11 @@ If all the dependencies are installed, creating a Firefox build is simply a matt
 
     gulp xpi
 
-This will produce a file named like `searchlinkfix-n.n.n.xpi`. Creating a build for Chrome and Opera is similar but requires a private key that the build should be signed with:
+This will produce a file named like `searchlinkfix-n.n.n.xpi`. Creating a build for Chrome and Opera is similar:
 
-    gulp crx --private-key=key.pem
+    gulp crx
 
-This will create a signed Chrome packaged named like `searchlinkfix-n.n.n.crx`. If you omit the private key parameter you will get an unsigned ZIP package instead.
+This will create an unsigned Chrome package named like `searchlinkfix-n.n.n.zip`.
 
 How to test
 -----------

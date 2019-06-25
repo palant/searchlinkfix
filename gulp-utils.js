@@ -11,8 +11,6 @@ let path = require("path");
 
 let Transform = require("stream").Transform;
 
-let RSA = require("node-rsa");
-
 exports.readArg = function(prefix, defaultValue)
 {
   for (let arg of process.argv)
@@ -62,38 +60,6 @@ function transform(modifier, opts)
   return stream;
 }
 exports.transform = transform;
-
-exports.signCRX = function(keyFile)
-{
-  return transform((filepath, contents) =>
-  {
-    return new Promise((resolve, reject) =>
-    {
-      fs.readFile(keyFile, function(error, data)
-      {
-        if (error)
-          reject(error);
-        else
-          resolve(data);
-      });
-    }).then(keyData =>
-    {
-      let privateKey = RSA(keyData, {signingScheme: "pkcs1-sha1"});
-      let publicKey = privateKey.exportKey("pkcs8-public-der");
-      let signature = privateKey.sign(contents, "buffer");
-
-      let header = new Buffer(16);
-      header.write("Cr24", 0);
-      header.writeInt32LE(2, 4);
-      header.writeInt32LE(publicKey.length, 8);
-      header.writeInt32LE(signature.length, 12);
-      return Buffer.concat([header, publicKey, signature, contents]);
-    }).then(contents =>
-    {
-      return [filepath.replace(/\.zip$/, ".crx"), contents];
-    });
-  }, {raw: true});
-};
 
 exports.download = function(url)
 {
