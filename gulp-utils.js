@@ -51,7 +51,7 @@ function transform(modifier, opts)
     }).then(([filepath, contents]) =>
     {
       file.path = filepath;
-      file.contents = new Buffer(contents, "utf-8");
+      file.contents = Buffer.from(contents, "utf-8");
       callback(null, file);
     }).catch(e =>
     {
