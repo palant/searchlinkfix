@@ -64,14 +64,6 @@ function buildZIP(filename, manifestModifier)
       .pipe(zip(filename));
 }
 
-gulp.task("default", ["all"], function()
-{
-});
-
-gulp.task("all", ["xpi", "crx", "appx"], function()
-{
-});
-
 gulp.task("eslint", function()
 {
   return gulp.src(["*.js", "data/**/*.js", "testhelper/**/*.js"])
@@ -80,11 +72,9 @@ gulp.task("eslint", function()
              .pipe(eslint.failAfterError());
 });
 
-gulp.task("validate", ["eslint"], function()
-{
-});
+gulp.task("validate", gulp.parallel("eslint"));
 
-gulp.task("xpi", ["validate"], function()
+gulp.task("xpi", gulp.series("validate", function()
 {
   let manifest = require("./manifest.json");
   let [dir, filename] = getBuildFileName("xpi");
@@ -93,10 +83,10 @@ gulp.task("xpi", ["validate"], function()
     delete manifestData.minimum_chrome_version;
     delete manifestData.minimum_opera_version;
     manifestData.permissions = ["http://*/*", "https://*/*"];
-  }).pipe(gulp.dest(dir));
-});
+  }).pipe(gulp.dest(dir || process.cwd()));
+}));
 
-gulp.task("crx", ["validate"], function()
+gulp.task("crx", gulp.series("validate", function()
 {
   let [dir, filename] = getBuildFileName("zip");
   let result = buildZIP(filename, function(manifestData)
@@ -106,10 +96,10 @@ gulp.task("crx", ["validate"], function()
   let keyFile = utils.readArg("--private-key=");
   if (keyFile)
     result = result.pipe(utils.signCRX(keyFile));
-  return result.pipe(gulp.dest(dir));
-});
+  return result.pipe(gulp.dest(dir || process.cwd()));
+}));
 
-gulp.task("build-edge", ["validate"], function()
+gulp.task("build-edge", gulp.series("validate", function()
 {
   let version = require("./manifest.json").version;
   while (version.split(".").length < 4)
@@ -143,17 +133,17 @@ gulp.task("build-edge", ["validate"], function()
         }))
         .pipe(gulp.dest("build-edge/extension/Extension"))
   );
-});
+}));
 
-gulp.task("build-edge/extension.zip", ["build-edge"], function()
+gulp.task("build-edge/extension.zip", gulp.series("build-edge", function()
 {
   return gulp.src([
     "build-edge/**",
     "!build-edge/**/*.zip"
   ]).pipe(zip("extension.zip")).pipe(gulp.dest("build-edge"));
-});
+}));
 
-gulp.task("appx", ["build-edge/extension.zip"], function(callback)
+gulp.task("appx", gulp.series("build-edge/extension.zip", function(callback)
 {
   let [dir, filename] = getBuildFileName("appx");
 
@@ -179,9 +169,9 @@ gulp.task("appx", ["build-edge/extension.zip"], function(callback)
   });
 
   req.form().append("xml", fs.createReadStream("build-edge/extension.zip"));
-});
+}));
 
-gulp.task("test", ["validate"], function()
+gulp.task("test", gulp.series("validate", function()
 {
   let firefoxPath = utils.readArg("--firefox-path=");
   if (!firefoxPath)
@@ -195,9 +185,12 @@ gulp.task("test", ["validate"], function()
     ps.stderr.pipe(process.stderr);
     ps.on("close", resolve);
   });
-});
+}));
 
 gulp.task("clean", function()
 {
   return del(["build-edge", "*.xpi", "*.zip", "*.crx", "*.appx"]);
 });
+
+gulp.task("all", gulp.parallel("xpi", "crx", "appx"));
+gulp.task("default", gulp.parallel("all"));
