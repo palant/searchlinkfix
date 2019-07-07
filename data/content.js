@@ -154,5 +154,9 @@ function interceptEvent(event)
       /^\s*https?:/i.test(link.getAttribute("href")))
   {
     event.stopPropagation();
+    if (event.getModifierState("Accel")) {
+      event.preventDefault();
+      browser.runtime.sendMessage({url: link.getAttribute("href")});
+    }
   }
 }
