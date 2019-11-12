@@ -1,9 +1,12 @@
 {
   "license": "MPL-2.0",
   "devDependencies": {
+    "chai": "^4.2.0",
     "del": "^5.1.0",
     "gulp": "^4.0.2",
     "gulp-eslint": "^6.0.0",
-    "gulp-zip": "^5.0.1"
+    "gulp-mocha": "^7.0.2",
+    "gulp-zip": "^5.0.1",
+    "puppeteer": "^2.0.0"
   }
 }

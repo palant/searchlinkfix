@@ -1,4 +1,5 @@
 /node_modules/
+/crx-unpacked/
 *.xpi
 *.zip
 *.crx

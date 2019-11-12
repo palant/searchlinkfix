@@ -6,17 +6,17 @@
 
 "use strict";
 
-let {spawn} = require("child_process");
-let fs = require("fs");
-let path = require("path");
-let url = require("url");
+const fs = require("fs");
+const path = require("path");
+const url = require("url");
 
-let del = require("del");
-let gulp = require("gulp");
-let eslint = require("gulp-eslint");
-let zip = require("gulp-zip");
+const del = require("del");
+const gulp = require("gulp");
+const eslint = require("gulp-eslint");
+const mocha = require("gulp-mocha");
+const zip = require("gulp-zip");
 
-let utils = require("./gulp-utils");
+const utils = require("./gulp-utils");
 
 let sources = ["manifest.json", "data/**/*", "_locales/**/*", "icon*.png", "LICENSE.txt"];
 
@@ -55,6 +55,11 @@ function modifyManifest(modifier)
   }, {files: ["manifest.json"]});
 }
 
+function modifyCRXManifest(manifestData)
+{
+  delete manifestData.applications;
+}
+
 function buildZIP(filename, manifestModifier)
 {
   return gulp.src(sources, {cwdbase: true})
@@ -64,7 +69,7 @@ function buildZIP(filename, manifestModifier)
 
 gulp.task("eslint", function()
 {
-  return gulp.src(["*.js", "data/**/*.js", "testhelper/**/*.js"])
+  return gulp.src(["*.js", "data/**/*.js", "testhelper/**/*.js", "tests/**/*.js"])
              .pipe(eslint())
              .pipe(eslint.format())
              .pipe(eslint.failAfterError());
@@ -72,7 +77,7 @@ gulp.task("eslint", function()
 
 gulp.task("validate", gulp.parallel("eslint"));
 
-gulp.task("xpi", gulp.series("validate", function()
+gulp.task("xpi", gulp.series("validate", function buildXPI()
 {
   let manifest = require("./manifest.json");
   let [dir, filename] = getBuildFileName("xpi");
@@ -84,34 +89,36 @@ gulp.task("xpi", gulp.series("validate", function()
   }).pipe(gulp.dest(dir || process.cwd()));
 }));
 
-gulp.task("crx", gulp.series("validate", function()
+gulp.task("crx", gulp.series("validate", function buildCRX()
 {
   let [dir, filename] = getBuildFileName("zip");
-  return buildZIP(filename, function(manifestData)
-  {
-    delete manifestData.applications;
-  }).pipe(gulp.dest(dir || process.cwd()));
+  return buildZIP(filename, modifyCRXManifest).pipe(gulp.dest(dir || process.cwd()));
 }));
 
-gulp.task("test", gulp.series("validate", function()
+gulp.task("unpacked-crx", gulp.series("validate", function buildUnpackedCRX()
 {
-  let firefoxPath = utils.readArg("--firefox-path=");
-  if (!firefoxPath)
-    throw new Error("--firefox-path parameter is required for integration tests");
+  return gulp.src(sources, {cwdbase: true})
+      .pipe(modifyManifest(modifyCRXManifest))
+      .pipe(gulp.dest("crx-unpacked"));
+}));
 
-  return new Promise((resolve, reject) =>
-  {
-    let script = path.resolve(process.cwd(), "run_tests.py");
-    let ps = spawn(script, [firefoxPath]);
-    ps.stdout.pipe(process.stdout);
-    ps.stderr.pipe(process.stderr);
-    ps.on("close", resolve);
-  });
+gulp.task("test", gulp.series("unpacked-crx", function runTests()
+{
+  let testFile = utils.readArg("--test=");
+  if (!testFile)
+    testFile = "**/*.js";
+  else if (!testFile.endsWith(".js"))
+    testFile += ".js";
+
+  return gulp.src("test/" + testFile)
+             .pipe(mocha({
+               timeout: 30000
+             }));
 }));
 
 gulp.task("clean", function()
 {
-  return del(["build-edge", "*.xpi", "*.zip", "*.crx"]);
+  return del(["crx-unpacked", "*.xpi", "*.zip", "*.crx"]);
 });
 
 gulp.task("all", gulp.parallel("xpi", "crx"));
