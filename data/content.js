@@ -36,13 +36,11 @@ let hosts = {
   "yandex.kz": "yandex",
   "yandex.ru": "yandex",
   "yandex.ua": "yandex",
-  "duckduckgo.com": "duckduckgo"
 };
 
 let containerAttr = {
   "google": ["id", "search"],
   "google-groups": ["role", "main"],
-  "duckduckgo": ["class", "results"],
   "google-news": ["class", "content-pane-container"],
 };
 
