@@ -28,7 +28,7 @@
         "*://*.yandex.fr/*",
         "*://*.yandex.kz/*",
         "*://*.yandex.ru/*",
-        "*://*.yandex.ua/*",
+        "*://*.yandex.ua/*"
       ],
       "run_at": "document_start",
       "js": ["data/content.js"]
