@@ -41,7 +41,6 @@ let hosts = {
 let containerAttr = {
   "google": ["id", "search"],
   "google-groups": ["role", "main"],
-  "google-news": ["class", "content-pane-container"],
 };
 
 function isSearchPage(window)
@@ -60,9 +59,6 @@ function isSearchPage(window)
   {
     // Getting host could throw on special pages
   }
-
-  if (document.querySelector("meta[name='apple-itunes-app'][content='app-id=913753848']"))
-    return "google-news";
 
   // Detect Google search pages by running some code in their context
   if (document instanceof HTMLDocument)
