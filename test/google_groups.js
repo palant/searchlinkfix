@@ -92,7 +92,7 @@ describe("Google Groups", () =>
     expect(link).to.be.not.null;
 
     await link.click();
-    await page.waitForSelector("div[aria-label='Google apps']");
+    await page.waitForSelector("iframe[src^='https://ogs.google.com/widget/app/']");
   });
 
   it("should shut down", async function()

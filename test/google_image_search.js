@@ -8,7 +8,8 @@
 
 import * as utils from "../test-utils.js";
 
-const searchResultSelector = "a.irc_hol,a.irc_pt";
+const searchResultSelector1 = "[data-cid^=GRID] a[target=_blank]";
+const searchResultSelector2 = "[data-hp=imgrc] a[role=button][target=_blank]";
 
 function stripAnchor(url)
 {
@@ -27,16 +28,16 @@ describe("Google Image Search", () =>
   {
     browser = await utils.launchBrowser();
     page = await browser.newPage();
-    await page.goto("https://www.google.com/search?hl=en&tbm=isch&q=site:palant.de");
+    await page.goto("https://www.google.com/search?hl=en&tbm=isch&q=site:palant.info");
   });
 
   it("should allow searching and opening images without reloading page", async function()
   {
-    let image = await page.waitForSelector("#res a > img", {visible: true});
+    let image = await page.waitForSelector("[data-cid^=GRID] img", {visible: true});
     await image.click();
-    await page.waitForSelector("#irc_bg");
+    await page.waitForSelector("[data-hp=imgrc]", {visible: true});
 
-    let links = await page.$$(searchResultSelector);
+    let links = [await page.$(searchResultSelector1), await page.$(searchResultSelector2)];
     for (let link of links)
     {
       if (await link.boxModel() === null)
@@ -113,11 +114,11 @@ describe("Google Image Search", () =>
 
   it("should open apps listing when Google Apps button is clicked", async function()
   {
-    let link = await page.$("a[title='Google apps']");
+    let link = await page.$("a[aria-label='Google apps']");
     expect(link).to.be.not.null;
 
     await link.click();
-    await page.waitForSelector("div[aria-label='Google apps']");
+    await page.waitForSelector("iframe[src^='https://ogs.google.com/widget/app/']");
   });
 
   it("should shut down", async function()

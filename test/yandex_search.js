@@ -20,7 +20,7 @@ describe("Yandex Search", () =>
   {
     browser = await utils.launchBrowser();
     page = await browser.newPage();
-    await page.goto("http://yandex.ru/yandsearch?text=site%3Apalant.de");
+    await page.goto("http://yandex.ru/yandsearch?text=site%3Apalant.info");
     await page.waitForSelector(searchResultSelector);
   });
 

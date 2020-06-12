@@ -39,8 +39,9 @@ let hosts = {
 };
 
 let containerAttr = {
-  "google": ["id", "search"],
-  "google-groups": ["role", "main"],
+  "google": "#search,.gsc-wrapper",
+  "google-groups": "[role=main]",
+  "google-images": "[data-cid^=GRID]",
 };
 
 function isSearchPage(window)
@@ -60,24 +61,9 @@ function isSearchPage(window)
     // Getting host could throw on special pages
   }
 
-  // Detect Google search pages by running some code in their context
-  if (document instanceof HTMLDocument)
-  {
-    let eventName = "searchlinkfix" + Math.random();
-    let script = document.createElement("script");
-    script.async = false;
-    script.textContent = "if (window.google && (window.google.sn || window.google.search))" +
-                           "window.dispatchEvent(new Event('" + eventName + "'))";
-
-    let isGoogle = false;
-    let handler = () => isGoogle = true;
-    window.addEventListener(eventName, handler, true);
-    document.documentElement.appendChild(script);
-    document.documentElement.removeChild(script);
-    window.removeEventListener(eventName, handler, true);
-    if (isGoogle)
-      return "google";
-  }
+  for (let type of ["google", "google-images"])
+    if (document instanceof HTMLDocument && document.querySelector(containerAttr[type]))
+      return type;
 
   if (document.readyState == "complete")
     detach();
@@ -92,9 +78,9 @@ function isSearchResult(link)
 
   if (containerAttr.hasOwnProperty(type))
   {
-    let [attr, value] = containerAttr[type];
+    let selector = containerAttr[type];
     for (let parent = link; parent; parent = parent.parentNode)
-      if ("getAttribute" in parent && parent.getAttribute(attr) == value)
+      if ("matches" in parent && parent.matches(selector))
         return true;
   }
   return false;

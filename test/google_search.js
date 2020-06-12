@@ -29,7 +29,7 @@ describe("Google Search", () =>
     let searchField = await page.$(searchFieldSelector);
     expect(searchField).to.be.not.null;
 
-    await searchField.type("site:palant.de\n");
+    await searchField.type("site:palant.info\n");
     await page.waitForSelector(searchResultSelector);
   });
 
