@@ -6,15 +6,15 @@
 
 "use strict";
 
-const puppeteer = require("puppeteer");
-const puppeteerApi = require("puppeteer/lib/api");
+import puppeteer from "puppeteer";
+import puppeteerApi from "puppeteer/lib/api.js";
 
 puppeteerApi.ElementHandle.prototype.getHref = function()
 {
   return this.evaluate(e => e.href);
 };
 
-exports.launchBrowser = async function()
+export async function launchBrowser()
 {
   return await puppeteer.launch({
     args: [
@@ -33,9 +33,9 @@ exports.launchBrowser = async function()
     // https://bugs.chromium.org/p/chromium/issues/detail?id=706008
     headless: false
   });
-};
+}
 
-exports.logTopLevelRequests = async function(page, handler)
+export async function logTopLevelRequests(page, handler)
 {
   let requests = [];
   function logRequest(request)
@@ -58,9 +58,9 @@ exports.logTopLevelRequests = async function(page, handler)
     await page.setRequestInterception(false);
   }
   return requests;
-};
+}
 
-exports.newTarget = async function(browser, handler)
+export function newTarget(browser, handler)
 {
   return new Promise((resolve, reject) =>
   {
@@ -74,4 +74,4 @@ exports.newTarget = async function(browser, handler)
 
     handler();
   });
-};
+}

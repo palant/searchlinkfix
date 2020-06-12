@@ -6,20 +6,23 @@
 
 "use strict";
 
-let fs = require("fs");
-let path = require("path");
+import fs from "fs";
+import https from "https";
+import path from "path";
+import {Transform} from "stream";
 
-let Transform = require("stream").Transform;
+import chai from "chai";
+import Mocha from "mocha";
 
-exports.readArg = function(prefix, defaultValue)
+export function readArg(prefix, defaultValue)
 {
   for (let arg of process.argv)
     if (arg.startsWith(prefix))
       return arg.substr(prefix.length);
   return defaultValue;
-};
+}
 
-function transform(modifier, opts)
+export function transform(modifier, opts)
 {
   if (!opts)
     opts = {};
@@ -59,13 +62,11 @@ function transform(modifier, opts)
   };
   return stream;
 }
-exports.transform = transform;
 
-exports.download = function(url)
+export function download(url)
 {
   return new Promise((resolve, reject) =>
   {
-    let https = require("https");
     let request = https.get(url, response =>
     {
       if (response.statusCode != 200)
@@ -87,4 +88,45 @@ exports.download = function(url)
     });
     request.on("error", error => reject(new Error(error.message)));
   });
-};
+}
+
+export function runTests()
+{
+  let mocha = new Mocha({
+    timeout: 30000
+  });
+
+  global.expect = chai.expect;
+
+  let stream = new Transform({objectMode: true});
+  stream._transform = function(file, encoding, callback)
+  {
+    if (!file.path)
+      throw new Error("Unexpected file type");
+
+    mocha.addFile(file.path);
+    callback(null);
+  };
+
+  stream._flush = async function(callback)
+  {
+    try
+    {
+      await mocha.loadFilesAsync();
+      await new Promise((resolve, reject) =>
+      {
+        mocha.run(failures => failures ? reject(new Error(`${failures} test(s) failed`)) : resolve());
+      });
+      callback(null);
+    }
+    catch (e)
+    {
+      callback(e);
+    }
+  };
+
+  stream.on("close", () => delete global.expect);
+  stream.on("error", () => delete global.expect);
+
+  return stream;
+}

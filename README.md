@@ -6,7 +6,7 @@ Google search link fix is a Firefox, Chrome and Opera extension that prevents Go
 Installing build prerequisites
 ------------------------------
 
-In order to build Google search link fix you will need to install [Node.js](https://nodejs.org/) first (Node 10 or higher is required). You will also need [Gulp](http://gulpjs.com/), run the following command to install it (administrator privileges required):
+In order to build Google search link fix you will need to install [Node.js](https://nodejs.org/) first (Node 13.8.0 or higher is required). You will also need [Gulp](http://gulpjs.com/), run the following command to install it (administrator privileges required):
 
     npm install --global gulp-cli
 

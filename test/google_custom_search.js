@@ -6,9 +6,7 @@
 
 "use strict";
 
-const {expect} = require("chai");
-
-const utils = require("../test-utils");
+import * as utils from "../test-utils.js";
 
 const searchResultSelector = "#cse a.gs-title";
 

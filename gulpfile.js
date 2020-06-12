@@ -6,27 +6,25 @@
 
 "use strict";
 
-const fs = require("fs");
-const path = require("path");
-const url = require("url");
+import fs from "fs";
+import path from "path";
 
-const del = require("del");
-const gulp = require("gulp");
-const eslint = require("gulp-eslint");
-const mocha = require("gulp-mocha");
-const zip = require("gulp-zip");
+import del from "del";
+import gulp from "gulp";
+import eslint from "gulp-eslint";
+import zip from "gulp-zip";
 
-const utils = require("./gulp-utils");
+import * as utils from "./gulp-utils.js";
 
-let sources = ["manifest.json", "data/**/*", "_locales/**/*", "icon*.png", "LICENSE.txt"];
+const VERSION = JSON.parse(fs.readFileSync("./manifest.json")).version;
+const sources = ["manifest.json", "data/**/*", "_locales/**/*", "icon*.png", "LICENSE.txt"];
 
 function getBuildFileName(extension)
 {
   let filename = utils.readArg("--outfile=");
   if (!filename)
   {
-    let manifest = require("./manifest.json");
-    filename = "searchlinkfix-" + manifest.version + "." + extension;
+    filename = "searchlinkfix-" + VERSION + "." + extension;
   }
 
   let dir = "";
@@ -79,7 +77,6 @@ gulp.task("validate", gulp.parallel("eslint"));
 
 gulp.task("xpi", gulp.series("validate", function buildXPI()
 {
-  let manifest = require("./manifest.json");
   let [dir, filename] = getBuildFileName("xpi");
   return buildZIP(filename, function(manifestData)
   {
@@ -110,9 +107,7 @@ gulp.task("test", gulp.series("unpacked-crx", function runTests()
     testFile += ".js";
 
   return gulp.src("test/" + testFile)
-             .pipe(mocha({
-               timeout: 30000
-             }));
+             .pipe(utils.runTests());
 }));
 
 gulp.task("clean", function()
