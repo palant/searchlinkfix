@@ -1,0 +1,8 @@
+{
+  "name": {
+    "message": "Google search link fix"
+  },
+  "description": {
+    "message": "GoogleやYandexが検索結果のリンク文字列に手を加えるのを防ぎます。"
+  }
+}
