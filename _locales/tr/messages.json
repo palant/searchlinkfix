@@ -1,0 +1,8 @@
+{
+  "name": {
+    "message": "Google arama bağlantısı düzeltme"
+  },
+  "description": {
+    "message": "Google ve Yandex arama sayfalarının, tıkladığınızda arama sonucu bağlantılarını değiştirmesini önler."
+  }
+}

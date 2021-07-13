@@ -1,8 +1,8 @@
 {
   "name": {
-    "message": "Google search link fix"
+    "message": "Google arama bağlantısı düzenler"
   },
   "description": {
-    "message": "Prevents Google and Yandex search pages from modifying search result links when you click them."
+    "message": "Google ve Yandex arama sayfalarının, tıkladığınızda arama sonucu bağlantılarını değiştirmesini engeller."
   }
 }
